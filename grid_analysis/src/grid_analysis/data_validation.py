@@ -5,7 +5,9 @@ from __future__ import annotations
 import pandas as pd
 
 
-def check_required_columns(dataframe: pd.DataFrame, required_columns: set[str]) -> list[str]:
+def check_required_columns(
+    dataframe: pd.DataFrame, required_columns: set[str]
+) -> list[str]:
     """Return a list of required columns missing from the dataframe."""
     return sorted(required_columns - set(dataframe.columns))
 
@@ -26,9 +28,8 @@ def check_lat_lon_ranges(
     lon_column: str,
 ) -> pd.DataFrame:
     """Return rows with latitude/longitude values outside valid ranges."""
-    mask = (
-        ~dataframe[lat_column].between(-90, 90)
-        | ~dataframe[lon_column].between(-180, 180)
+    mask = ~dataframe[lat_column].between(-90, 90) | ~dataframe[lon_column].between(
+        -180, 180
     )
     return dataframe.loc[mask]
 

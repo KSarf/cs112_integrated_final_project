@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import subprocess
-import sys
-
 
 CHECKS = [
     ["ruff", "check", "."],

@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from cliniccare_lite.app.uploads.validators import is_allowed_extension, sanitize_filename
+from cliniccare_lite.app.uploads.validators import (
+    is_allowed_extension,
+    sanitize_filename,
+)
 
 
 def test_allowed_extensions_and_filename_sanitization() -> None:

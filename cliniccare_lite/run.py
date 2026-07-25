@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from app import create_app
+import os
+
+from cliniccare_lite.app import create_app
 
 app = create_app()
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=os.getenv("FLASK_DEBUG", "false").lower() == "true")

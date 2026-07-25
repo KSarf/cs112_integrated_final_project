@@ -15,7 +15,9 @@ from grid_analysis.src.grid_analysis.data_validation import (
 
 def test_required_columns_and_missing_values() -> None:
     dataframe = pd.DataFrame({"node_id": [1, 2], "name": ["A", None]})
-    assert check_required_columns(dataframe, {"node_id", "name", "region"}) == ["region"]
+    assert check_required_columns(dataframe, {"node_id", "name", "region"}) == [
+        "region"
+    ]
     assert check_missing_values(dataframe, ["name"]) == {"name": 1}
 
 

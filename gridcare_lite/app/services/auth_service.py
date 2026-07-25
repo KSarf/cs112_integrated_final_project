@@ -14,7 +14,9 @@ class AuthService:
 
     config: GridCareConfig
 
-    def demo_login_allowed(self, username: str, password: str, password_hash: str) -> bool:
+    def demo_login_allowed(
+        self, username: str, password: str, password_hash: str
+    ) -> bool:
         """Allow demo login only when explicitly enabled in config.
 
         TODO: Replace with proper persistent user authentication flow.

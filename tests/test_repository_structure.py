@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-
 REQUIRED_PATHS = [
     Path("grid_analysis/src/grid_analysis/data_validation.py"),
     Path("gridcare_lite/app/main.py"),
