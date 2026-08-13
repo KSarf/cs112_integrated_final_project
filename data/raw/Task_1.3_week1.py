@@ -1,9 +1,8 @@
 
 import csv
+from pathlib import Path
 
 import pandas as pd
-import numpy as np
-from pathlib import Path
 
 BASE_DIR = Path(__file__).parent  # folder containing this script
 
@@ -44,7 +43,7 @@ foreign_key_relationships = {
         'Source Substation ID': 'substations',
         'Destination Substation ID': 'substations',
         'Utility ID': 'utilities'
-    },  
+    },
 }
 
 valid_ids = set(substations['Substation ID'])
@@ -74,4 +73,4 @@ else:
 
 
 
-        
+

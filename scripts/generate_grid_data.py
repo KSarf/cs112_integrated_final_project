@@ -93,14 +93,14 @@ sub_types = ["Distribution", "Bulk Supply Point", "Transmission"]
 substations = []
 sid = 1
 name_to_id = {}
-for region, places in ghana_regions.items():
+for _region, places in ghana_regions.items():
     for name, lat, lon in places:
         voltage = random.choice(voltage_levels)
         sub_type = "Transmission" if voltage >= 161 else ("Bulk Supply Point" if voltage == 69 else "Distribution")
         capacity = round(random.uniform(15, 400) if sub_type != "Distribution" else random.uniform(5, 60), 1)
         status = "Active" if random.random() > 0.05 else "Inactive"
         substations.append([
-            sid, f"{name} Substation", name, region, "Ghana",
+            sid, f"{name} Substation", name, _region, "Ghana",
             round(lat + random.uniform(-0.01, 0.01), 4), round(lon + random.uniform(-0.01, 0.01), 4),
             voltage, capacity, random.randint(1965, 2023), sub_type, status,
         ])
@@ -137,7 +137,7 @@ lid = 1
 seen_pairs = set()
 
 # Connect substations within each region into a loosely meshed network
-for region, places in ghana_regions.items():
+for _region, places in ghana_regions.items():
     ids_in_region = [name_to_id[n] for n, _, _ in places]
     for i, a in enumerate(ids_in_region):
         for b in ids_in_region[i + 1:]:

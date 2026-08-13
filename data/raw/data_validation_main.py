@@ -1,6 +1,6 @@
-import pandas as pd
-import numpy as np
 from pathlib import Path
+
+import pandas as pd
 
 BASE_DIR = Path(__file__).parent  # folder containing this script
 
