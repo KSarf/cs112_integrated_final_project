@@ -7,10 +7,11 @@ from collections.abc import Callable
 from gridcare_lite.app.config import GridCareConfig
 from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk
 
+
 if tk is not None:
 
     class LoginView(tk.Frame):
-        """Starter login view with development-only demo path."""
+        """Login screen for GridCare-Lite."""
 
         def __init__(
             self,
@@ -19,26 +20,40 @@ if tk is not None:
             on_success: Callable[[str], None],
         ) -> None:
             super().__init__(parent)
+
             self._config = config
             self._on_success = on_success
 
-            tk.Label(self, text="GridCare-Lite Login", font=("Arial", 16, "bold")).pack(
-                pady=8
-            )
             tk.Label(
                 self,
-                text="Prototype notice: Initial prototype, not production-ready.",
-            ).pack(pady=4)
+                text="GridCare-Lite Login",
+                font=("Arial", 16, "bold"),
+            ).pack(pady=15)
 
-            tk.Label(self, text="Username").pack()
+            tk.Label(
+                self,
+                text="Username",
+            ).pack()
+
             self.username_entry = tk.Entry(self)
-            self.username_entry.pack()
+            self.username_entry.pack(pady=5)
 
-            tk.Label(self, text="Password").pack()
-            self.password_entry = tk.Entry(self, show="*")
-            self.password_entry.pack()
+            tk.Label(
+                self,
+                text="Password",
+            ).pack()
 
-            tk.Button(self, text="Login", command=self._attempt_login).pack(pady=10)
+            self.password_entry = tk.Entry(
+                self,
+                show="*",
+            )
+            self.password_entry.pack(pady=5)
+
+            tk.Button(
+                self,
+                text="Login",
+                command=self._attempt_login,
+            ).pack(pady=15)
 
         def _attempt_login(self) -> None:
             username = self.username_entry.get().strip()
@@ -53,16 +68,22 @@ if tk is not None:
                 return
 
             assert messagebox is not None
+
             messagebox.showwarning(
                 "Login failed",
-                "Demo login is disabled or credentials are invalid.",
+                "Invalid username or password.",
             )
+
 
 else:
 
-    class LoginView:  # pragma: no cover - environment-specific
-        """Fallback class used when tkinter is unavailable."""
+    class LoginView:  # pragma: no cover
+        """Fallback when Tkinter is unavailable."""
 
-        def __init__(self, *args: object, **kwargs: object) -> None:
+        def __init__(
+            self,
+            *args: object,
+            **kwargs: object,
+        ) -> None:
             _ = args, kwargs
             require_tkinter()
