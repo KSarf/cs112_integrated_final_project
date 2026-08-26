@@ -1,9 +1,23 @@
-"""Clinician forms placeholders."""
-
-from __future__ import annotations
-
 from flask_wtf import FlaskForm
+from wtforms import StringField, TextAreaField, SubmitField
+from wtforms.validators import DataRequired
 
 
-class PlaceholderClinicianForm(FlaskForm):
-    """TODO: Replace with implemented clinician forms."""
+class TaskForm(FlaskForm):
+
+    patient_username = StringField(
+        "Patient Username",
+        validators=[DataRequired()]
+    )
+
+    title = StringField(
+        "Task Title",
+        validators=[DataRequired()]
+    )
+
+    instructions = TextAreaField(
+        "Instructions",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Create Task")
