@@ -4,12 +4,29 @@
 
 <h2>Clinician Dashboard</h2>
 
-<p>
-    Welcome, {{ current_user.username }}.
+<p class="text-muted">
+    Welcome, {{ current_user.full_name or current_user.username }}.
 </p>
 
 
-<h4 class="mt-4">
+<div class="mb-4">
+
+    <a href="{{ url_for('clinician.create_task') }}" class="btn btn-primary">
+        Create Task
+    </a>
+
+    <a href="{{ url_for('clinician.create_appointment') }}" class="btn btn-success">
+        Schedule Appointment
+    </a>
+
+    <a href="{{ url_for('clinician.create_announcement') }}" class="btn btn-warning">
+        Publish Announcement
+    </a>
+
+</div>
+
+
+<h4>
     Operational Summary
 </h4>
 
@@ -21,13 +38,12 @@
 <div class="row mb-4">
 
     <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Total Tasks
-                </h5>
+                <h5>Total Tasks</h5>
 
                 <h3>
                     {{ analytics.total_tasks }}
@@ -36,17 +52,17 @@
             </div>
 
         </div>
+
     </div>
 
 
     <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Pending Tasks
-                </h5>
+                <h5>Pending Tasks</h5>
 
                 <h3>
                     {{ analytics.pending_tasks }}
@@ -55,17 +71,17 @@
             </div>
 
         </div>
+
     </div>
 
 
     <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Submitted
-                </h5>
+                <h5>Submitted</h5>
 
                 <h3>
                     {{ analytics.submitted_tasks }}
@@ -74,17 +90,17 @@
             </div>
 
         </div>
+
     </div>
 
 
     <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Reviewed
-                </h5>
+                <h5>Reviewed</h5>
 
                 <h3>
                     {{ analytics.reviewed_tasks }}
@@ -93,6 +109,7 @@
             </div>
 
         </div>
+
     </div>
 
 </div>
@@ -100,14 +117,13 @@
 
 <div class="row mb-4">
 
-    <div class="col-md-4">
+    <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Needs Resubmission
-                </h5>
+                <h5>Needs Resubmission</h5>
 
                 <h3>
                     {{ analytics.resubmission_tasks }}
@@ -116,17 +132,36 @@
             </div>
 
         </div>
+
     </div>
 
 
-    <div class="col-md-4">
+    <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Total Submissions
-                </h5>
+                <h5>Overdue</h5>
+
+                <h3>
+                    {{ analytics.overdue_tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>Total Submissions</h5>
 
                 <h3>
                     {{ analytics.total_submissions }}
@@ -135,17 +170,40 @@
             </div>
 
         </div>
+
     </div>
 
 
-    <div class="col-md-4">
+    <div class="col-md-3">
+
         <div class="card mb-3">
 
             <div class="card-body">
 
-                <h5>
-                    Appointments
-                </h5>
+                <h5>Pending Reviews</h5>
+
+                <h3>
+                    {{ analytics.pending_reviews }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="row mb-4">
+
+    <div class="col-md-6">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>Appointments</h5>
 
                 <h3>
                     {{ analytics.total_appointments }}
@@ -154,18 +212,29 @@
             </div>
 
         </div>
+
+    </div>
+
+
+    <div class="col-md-6">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>Announcements</h5>
+
+                <h3>
+                    {{ analytics.total_announcements }}
+                </h3>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
-
-
-<a href="{{ url_for('clinician.create_task') }}" class="btn btn-primary mb-4">
-    Create Task
-</a>
-
-<a href="{{ url_for('clinician.create_appointment') }}" class="btn btn-success mb-4">
-    Schedule Appointment
-</a>
 
 
 <h4>
@@ -188,18 +257,24 @@
             {{ task.instructions }}
         </p>
 
+        {% if task.due_date %}
+
         <p>
-            <strong>
-                Status:
-            </strong>
+            <strong>Due Date:</strong>
+
+            {{ task.due_date.strftime("%Y-%m-%d") }}
+        </p>
+
+        {% endif %}
+
+        <p>
+            <strong>Status:</strong>
 
             {{ task.status }}
         </p>
 
         <p>
-            <strong>
-                Patient ID:
-            </strong>
+            <strong>Patient ID:</strong>
 
             {{ task.patient_id }}
         </p>
@@ -235,27 +310,32 @@
     <div class="card-body">
 
         <p>
-            <strong>
-                File:
-            </strong>
+            <strong>File:</strong>
 
             {{ submission.file_name }}
         </p>
 
         <p>
-            <strong>
-                Status:
-            </strong>
+            <strong>Status:</strong>
 
             {{ submission.status }}
         </p>
 
+        {% if submission.submitted_at %}
+
+        <p>
+            <strong>Submitted:</strong>
+
+            {{ submission.submitted_at.strftime("%Y-%m-%d %H:%M") }}
+        </p>
+
+        {% endif %}
+
+
         {% if submission.review_notes %}
 
         <p>
-            <strong>
-                Review Notes:
-            </strong>
+            <strong>Review Notes:</strong>
 
             {{ submission.review_notes }}
         </p>
@@ -313,25 +393,19 @@
         </h5>
 
         <p>
-            <strong>
-                Date:
-            </strong>
+            <strong>Date:</strong>
 
             {{ appointment.appointment_time }}
         </p>
 
         <p>
-            <strong>
-                Status:
-            </strong>
+            <strong>Status:</strong>
 
             {{ appointment.status }}
         </p>
 
         <p>
-            <strong>
-                Patient ID:
-            </strong>
+            <strong>Patient ID:</strong>
 
             {{ appointment.patient_id }}
         </p>
@@ -360,6 +434,79 @@
 
 <p>
     No appointments scheduled.
+</p>
+
+{% endif %}
+
+
+<hr class="my-4">
+
+
+<h4>
+    Clinic Announcements
+</h4>
+
+{% if announcements %}
+
+{% for announcement in announcements %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <h5>
+            {{ announcement.title }}
+
+            {% if announcement.priority == "Urgent" %}
+
+            <span class="badge bg-danger">
+                Urgent
+            </span>
+
+            {% else %}
+
+            <span class="badge bg-secondary">
+                Routine
+            </span>
+
+            {% endif %}
+
+        </h5>
+
+
+        <p>
+            {{ announcement.body }}
+        </p>
+
+
+        <small class="text-muted">
+
+            Published:
+            {{ announcement.published_at.strftime(
+            "%Y-%m-%d %H:%M"
+            ) }}
+
+            {% if announcement.expires_at %}
+
+            • Expires:
+            {{ announcement.expires_at.strftime(
+            "%Y-%m-%d %H:%M"
+            ) }}
+
+            {% endif %}
+
+        </small>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>
+    No announcements published yet.
 </p>
 
 {% endif %}
