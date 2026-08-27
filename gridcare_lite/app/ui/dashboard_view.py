@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 from collections.abc import Callable
+from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 
@@ -44,26 +44,32 @@ if tk is not None:
             username: str,
             on_substations: Callable[[], None],
             on_outages: Callable[[], None],
+            on_work_orders: Callable[[], None],
         ) -> None:
             super().__init__(parent)
 
             self._on_substations = on_substations
             self._on_outages = on_outages
+            self._on_work_orders = on_work_orders
 
-            # Header
+            # -------------------------
+            # HEADER
+            # -------------------------
             tk.Label(
                 self,
                 text="GridCare-Lite Dashboard",
-                font=("Arial", 22, "bold"),
-            ).pack(pady=(25, 5))
+                font=("Arial", 20, "bold"),
+            ).pack(pady=(20, 5))
 
             tk.Label(
                 self,
                 text=f"Welcome, {username}",
                 font=("Arial", 12),
-            ).pack(pady=(0, 20))
+            ).pack(pady=(0, 15))
 
-            # Statistics
+            # -------------------------
+            # STATISTICS
+            # -------------------------
             substations, lines, outages, work_orders = get_counts()
 
             stats_frame = tk.Frame(self)
@@ -97,37 +103,62 @@ if tk is not None:
                 3,
             )
 
-            # Navigation
-            navigation_frame = tk.Frame(self)
-            navigation_frame.pack(pady=30)
+            # -------------------------
+            # NAVIGATION
+            # -------------------------
+            tk.Label(
+                self,
+                text="Grid Management",
+                font=("Arial", 14, "bold"),
+            ).pack(pady=(25, 10))
+
+            buttons_frame = tk.Frame(self)
+            buttons_frame.pack(pady=5)
 
             tk.Button(
-                navigation_frame,
+                buttons_frame,
                 text="View Substations",
                 width=20,
                 command=self._on_substations,
             ).grid(
                 row=0,
                 column=0,
-                padx=10,
+                padx=8,
+                pady=8,
             )
 
             tk.Button(
-                navigation_frame,
+                buttons_frame,
                 text="View Outages",
                 width=20,
                 command=self._on_outages,
             ).grid(
                 row=0,
                 column=1,
-                padx=10,
+                padx=8,
+                pady=8,
             )
 
+            tk.Button(
+                buttons_frame,
+                text="View Work Orders",
+                width=20,
+                command=self._on_work_orders,
+            ).grid(
+                row=0,
+                column=2,
+                padx=8,
+                pady=8,
+            )
+
+            # -------------------------
+            # STATUS
+            # -------------------------
             tk.Label(
                 self,
                 text="Grid infrastructure data loaded successfully.",
                 font=("Arial", 11),
-            ).pack(pady=10)
+            ).pack(pady=25)
 
         def _create_stat(
             self,

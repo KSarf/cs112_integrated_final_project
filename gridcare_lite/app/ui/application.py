@@ -7,6 +7,7 @@ from gridcare_lite.app.ui.dashboard_view import DashboardView
 from gridcare_lite.app.ui.login_view import LoginView
 from gridcare_lite.app.ui.outages_view import OutagesView
 from gridcare_lite.app.ui.substations_view import SubstationsView
+from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 
 
@@ -19,8 +20,8 @@ if tk is not None:
             super().__init__()
 
             self.title("GridCare-Lite")
-            self.geometry("900x600")
-            self.minsize(800, 500)
+            self.geometry("1000x650")
+            self.minsize(900, 600)
 
             self._config = config
             self._active_frame = None
@@ -39,17 +40,19 @@ if tk is not None:
                 )
             )
 
-        def show_dashboard(self, username: str) -> None:
+        def show_dashboard(self, username: str | None = None) -> None:
             """Display the main dashboard."""
 
-            self._username = username
+            if username is not None:
+                self._username = username
 
             self._swap_frame(
                 DashboardView(
                     self,
-                    username,
+                    self._username,
                     self.show_substations,
                     self.show_outages,
+                    self.show_work_orders,
                 )
             )
 
@@ -59,7 +62,7 @@ if tk is not None:
             self._swap_frame(
                 SubstationsView(
                     self,
-                    lambda: self.show_dashboard(self._username),
+                    self.show_dashboard,
                 )
             )
 
@@ -69,7 +72,17 @@ if tk is not None:
             self._swap_frame(
                 OutagesView(
                     self,
-                    lambda: self.show_dashboard(self._username),
+                    self.show_dashboard,
+                )
+            )
+
+        def show_work_orders(self) -> None:
+            """Display the work orders view."""
+
+            self._swap_frame(
+                WorkOrdersView(
+                    self,
+                    self.show_dashboard,
                 )
             )
 
@@ -80,7 +93,6 @@ if tk is not None:
                 self._active_frame.destroy()
 
             self._active_frame = frame
-
             self._active_frame.pack(
                 fill=tk.BOTH,
                 expand=True,
