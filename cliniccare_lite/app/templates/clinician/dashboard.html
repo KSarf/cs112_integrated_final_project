@@ -4,10 +4,16 @@
 
 <h2>Clinician Dashboard</h2>
 
-<p>Welcome, {{ current_user.username }}.</p>
+<p>
+    Welcome, {{ current_user.username }}.
+</p>
 
 <a href="{{ url_for('clinician.create_task') }}" class="btn btn-primary mb-4">
     Create Task
+</a>
+
+<a href="{{ url_for('clinician.create_appointment') }}" class="btn btn-success mb-4">
+    Schedule Appointment
 </a>
 
 <h4>Tasks I Created</h4>
@@ -17,11 +23,16 @@
 {% for task in tasks %}
 
 <div class="card mb-3">
+
     <div class="card-body">
 
-        <h5>{{ task.title }}</h5>
+        <h5>
+            {{ task.title }}
+        </h5>
 
-        <p>{{ task.instructions }}</p>
+        <p>
+            {{ task.instructions }}
+        </p>
 
         <p>
             <strong>Status:</strong>
@@ -34,14 +45,135 @@
         </p>
 
     </div>
+
 </div>
 
 {% endfor %}
 
 {% else %}
 
-<p>No tasks have been created yet.</p>
+<p>
+    No tasks have been created yet.
+</p>
 
 {% endif %}
 
+
+<hr class="my-4">
+
+
+<h4>Patient Submissions</h4>
+
+{% if submissions %}
+
+{% for submission in submissions %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <p>
+            <strong>File:</strong>
+            {{ submission.file_name }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ submission.status }}
+        </p>
+
+        {% if submission.review_notes %}
+
+        <p>
+            <strong>
+                Review Notes:
+            </strong>
+
+            {{ submission.review_notes }}
+        </p>
+
+        {% endif %}
+
+        <a href="{{ url_for(
+                        'clinician.download_submission',
+                        submission_id=submission.id
+                    ) }}" class="btn btn-secondary">
+            Download File
+        </a>
+
+        <a href="{{ url_for(
+                        'clinician.review_submission',
+                        submission_id=submission.id
+                    ) }}" class="btn btn-primary">
+            Review Submission
+        </a>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>
+    No patient submissions yet.
+</p>
+
+{% endif %}
+<hr class="my-4">
+
+<h4>Appointments</h4>
+
+{% if appointments %}
+
+{% for appointment in appointments %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <h5>
+            {{ appointment.summary }}
+        </h5>
+
+        <p>
+            <strong>Date:</strong>
+            {{ appointment.appointment_time }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ appointment.status }}
+        </p>
+
+        <p>
+            <strong>Patient ID:</strong>
+            {{ appointment.patient_id }}
+        </p>
+
+        <form method="post" action="{{ url_for(
+                        'clinician.send_appointment_reminder',
+                        appointment_id=appointment.id
+                    ) }}">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <button type="submit" class="btn btn-warning">
+                Send Reminder
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No appointments scheduled.</p>
+
+{% endif %}
 {% endblock %}

@@ -23,18 +23,34 @@
             <strong>Status:</strong>
             {{ task.status }}
         </p>
-        {% if task.status == "Pending" %}
+
+        {% if task.status == "Pending"
+        or task.status == "Needs Resubmission" %}
 
         <a href="{{ url_for('patient.submit_task', task_id=task.id) }}" class="btn btn-primary">
             Submit File
         </a>
 
         {% endif %}
+
         {% if task.status == "Submitted" %}
 
         <p>File uploaded.</p>
 
         {% endif %}
+
+        {% if task.status == "Reviewed" %}
+
+        <p>Submission reviewed by clinician.</p>
+
+        {% endif %}
+
+        {% if task.status == "Needs Resubmission" %}
+
+        <p>Please upload a new file.</p>
+
+        {% endif %}
+
     </div>
 </div>
 
@@ -43,6 +59,45 @@
 {% else %}
 
 <p>You currently have no assigned tasks.</p>
+
+{% endif %}
+<hr class="my-4">
+
+<h4>My Appointments</h4>
+
+{% if appointments %}
+
+{% for appointment in appointments %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <h5>
+            {{ appointment.summary }}
+        </h5>
+
+        <p>
+            <strong>Date:</strong>
+            {{ appointment.appointment_time }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ appointment.status }}
+        </p>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>
+    You have no scheduled appointments.
+</p>
 
 {% endif %}
 

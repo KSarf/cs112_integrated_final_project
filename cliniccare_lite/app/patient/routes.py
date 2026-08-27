@@ -11,6 +11,7 @@ from flask import (
 from flask_login import current_user, login_required
 
 from cliniccare_lite.app.extensions import db
+from cliniccare_lite.app.models.appointment import Appointment
 from cliniccare_lite.app.models.submission import Submission
 from cliniccare_lite.app.models.task import Task
 from cliniccare_lite.app.uploads.validators import (
@@ -32,16 +33,29 @@ patient_bp = Blueprint(
 @login_required
 def dashboard():
 
+    # Only patients should use the patient dashboard.
     if current_user.role != "patient":
-        return redirect(url_for("clinician.dashboard"))
+        return redirect(
+            url_for("clinician.dashboard")
+        )
 
+    # Find tasks assigned to this patient.
     tasks = Task.query.filter_by(
         patient_id=current_user.id
     ).all()
 
+    # Find appointments belonging to this patient.
+    appointments = Appointment.query.filter_by(
+        patient_id=current_user.id
+    ).order_by(
+        Appointment.appointment_time.asc()
+    ).all()
+
+    # Send both tasks and appointments to dashboard.html.
     return render_template(
         "patient/dashboard.html",
-        tasks=tasks
+        tasks=tasks,
+        appointments=appointments
     )
 
 
@@ -53,20 +67,37 @@ def dashboard():
 def submit_task(task_id):
 
     if current_user.role != "patient":
-        return redirect(url_for("clinician.dashboard"))
+        return redirect(
+            url_for("clinician.dashboard")
+        )
 
-    task = db.session.get(Task, task_id)
+    task = db.session.get(
+        Task,
+        task_id
+    )
 
     if task is None:
-        flash("Task not found.", "danger")
-        return redirect(url_for("patient.dashboard"))
 
+        flash(
+            "Task not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("patient.dashboard")
+        )
+
+    # Patient can only upload to their own task.
     if task.patient_id != current_user.id:
+
         flash(
             "You cannot submit files for this task.",
             "danger"
         )
-        return redirect(url_for("patient.dashboard"))
+
+        return redirect(
+            url_for("patient.dashboard")
+        )
 
     form = SubmissionForm()
 
@@ -74,7 +105,10 @@ def submit_task(task_id):
 
         uploaded_file = form.file.data
 
-        if not is_allowed_extension(uploaded_file.filename):
+        if not is_allowed_extension(
+            uploaded_file.filename
+        ):
+
             flash(
                 "Only TXT, CSV and PDF files are allowed.",
                 "danger"
@@ -99,9 +133,13 @@ def submit_task(task_id):
             exist_ok=True
         )
 
-        file_path = upload_folder / file_name
+        file_path = (
+            upload_folder / file_name
+        )
 
-        uploaded_file.save(file_path)
+        uploaded_file.save(
+            file_path
+        )
 
         submission = Submission()
 
@@ -109,7 +147,9 @@ def submit_task(task_id):
         submission.patient_id = current_user.id
         submission.file_name = file_name
 
-        db.session.add(submission)
+        db.session.add(
+            submission
+        )
 
         task.status = "Submitted"
 

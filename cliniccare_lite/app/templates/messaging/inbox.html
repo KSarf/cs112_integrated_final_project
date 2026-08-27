@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Messages</h2>
+
+<a href="{{ url_for('messaging.send_message') }}" class="btn btn-primary mb-4">
+    Send Message
+</a>
+
+
+<h4>Notifications</h4>
+
+{% if notifications %}
+
+{% for notification in notifications %}
+
+<div class="alert
+            {% if notification.is_read %}
+                alert-secondary
+            {% else %}
+                alert-info
+            {% endif %}
+        ">
+
+    {{ notification.message }}
+
+    {% if not notification.is_read %}
+
+    <form method="post" action="{{ url_for(
+                        'messaging.mark_notification_read',
+                        notification_id=notification.id
+                    ) }}" class="d-inline">
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <button class="btn btn-sm btn-outline-dark" type="submit">
+            Mark Read
+        </button>
+
+    </form>
+
+    {% endif %}
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No notifications.</p>
+
+{% endif %}
+
+
+<hr>
+
+
+<h4>Received Messages</h4>
+
+{% if received_messages %}
+
+{% for message in received_messages %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <p>
+            {{ message.body }}
+        </p>
+
+        <small>
+            Sender ID:
+            {{ message.sender_id }}
+        </small>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No received messages.</p>
+
+{% endif %}
+
+
+<hr>
+
+
+<h4>Sent Messages</h4>
+
+{% if sent_messages %}
+
+{% for message in sent_messages %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <p>
+            {{ message.body }}
+        </p>
+
+        <small>
+            Receiver ID:
+            {{ message.receiver_id }}
+        </small>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No sent messages.</p>
+
+{% endif %}
+
+{% endblock %}
