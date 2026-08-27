@@ -12,7 +12,7 @@ from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
-def get_counts() -> tuple[int, int, int, int]:
+def get_counts() -> tuple[int, int, int, int, int]:
     """Get basic statistics from the GridCare database."""
 
     with sqlite3.connect(DATABASE_PATH) as connection:
@@ -30,7 +30,10 @@ def get_counts() -> tuple[int, int, int, int]:
         cursor.execute("SELECT COUNT(*) FROM work_orders")
         work_orders = cursor.fetchone()[0]
 
-    return substations, lines, outages, work_orders
+        cursor.execute("SELECT COUNT(*) FROM complaints")
+        complaints = cursor.fetchone()[0]
+
+    return substations, lines, outages, work_orders, complaints
 
 
 if tk is not None:
@@ -45,12 +48,14 @@ if tk is not None:
             on_substations: Callable[[], None],
             on_outages: Callable[[], None],
             on_work_orders: Callable[[], None],
+            on_complaints: Callable[[], None],
         ) -> None:
             super().__init__(parent)
 
             self._on_substations = on_substations
             self._on_outages = on_outages
             self._on_work_orders = on_work_orders
+            self._on_complaints = on_complaints
 
             # -------------------------
             # HEADER
@@ -70,7 +75,13 @@ if tk is not None:
             # -------------------------
             # STATISTICS
             # -------------------------
-            substations, lines, outages, work_orders = get_counts()
+            (
+                substations,
+                lines,
+                outages,
+                work_orders,
+                complaints,
+            ) = get_counts()
 
             stats_frame = tk.Frame(self)
             stats_frame.pack(pady=10)
@@ -101,6 +112,13 @@ if tk is not None:
                 "Work Orders",
                 work_orders,
                 3,
+            )
+
+            self._create_stat(
+                stats_frame,
+                "Complaints",
+                complaints,
+                4,
             )
 
             # -------------------------
@@ -151,6 +169,19 @@ if tk is not None:
                 pady=8,
             )
 
+            tk.Button(
+                buttons_frame,
+                text="View Complaints",
+                width=20,
+                command=self._on_complaints,
+            ).grid(
+                row=1,
+                column=0,
+                columnspan=3,
+                padx=8,
+                pady=8,
+            )
+
             # -------------------------
             # STATUS
             # -------------------------
@@ -180,7 +211,7 @@ if tk is not None:
             frame.grid(
                 row=0,
                 column=column,
-                padx=8,
+                padx=6,
             )
 
             tk.Label(

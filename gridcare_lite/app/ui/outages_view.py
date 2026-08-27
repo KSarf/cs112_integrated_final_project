@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 from collections.abc import Callable
+from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk, ttk
 
@@ -26,21 +26,27 @@ if tk is not None:
 
             self._on_back = on_back
 
-            # Header
+            # -------------------------
+            # HEADER
+            # -------------------------
+            header = tk.Frame(self)
+            header.pack(fill=tk.X, padx=20, pady=(20, 10))
+
+            tk.Button(
+                header,
+                text="Back to Dashboard",
+                command=self._on_back,
+            ).pack(side=tk.LEFT)
+
             tk.Label(
-                self,
+                header,
                 text="Grid Outages",
                 font=("Arial", 20, "bold"),
-            ).pack(pady=15)
+            ).pack(side=tk.LEFT, padx=25)
 
-            # Back button
-            tk.Button(
-                self,
-                text="← Back to Dashboard",
-                command=self._on_back,
-            ).pack(pady=(0, 10))
-
-            # Table
+            # -------------------------
+            # TABLE
+            # -------------------------
             table_frame = tk.Frame(self)
             table_frame.pack(
                 fill=tk.BOTH,
@@ -58,37 +64,37 @@ if tk is not None:
                 "reported_at",
             )
 
-            self.table = ttk.Treeview(
+            self.tree = ttk.Treeview(
                 table_frame,
                 columns=columns,
                 show="headings",
             )
 
-            self.table.heading("id", text="ID")
-            self.table.heading("title", text="Title")
-            self.table.heading("substation", text="Substation")
-            self.table.heading("severity", text="Severity")
-            self.table.heading("status", text="Status")
-            self.table.heading("reported_at", text="Reported At")
+            self.tree.heading("id", text="ID")
+            self.tree.heading("title", text="Title")
+            self.tree.heading("substation", text="Substation")
+            self.tree.heading("severity", text="Severity")
+            self.tree.heading("status", text="Status")
+            self.tree.heading("reported_at", text="Reported At")
 
-            self.table.column("id", width=50)
-            self.table.column("title", width=220)
-            self.table.column("substation", width=180)
-            self.table.column("severity", width=100)
-            self.table.column("status", width=120)
-            self.table.column("reported_at", width=160)
+            self.tree.column("id", width=50, anchor=tk.CENTER)
+            self.tree.column("title", width=220)
+            self.tree.column("substation", width=150)
+            self.tree.column("severity", width=100, anchor=tk.CENTER)
+            self.tree.column("status", width=130, anchor=tk.CENTER)
+            self.tree.column("reported_at", width=160)
 
             scrollbar = ttk.Scrollbar(
                 table_frame,
-                orient="vertical",
-                command=self.table.yview,
+                orient=tk.VERTICAL,
+                command=self.tree.yview,
             )
 
-            self.table.configure(
-                yscrollcommand=scrollbar.set
+            self.tree.configure(
+                yscrollcommand=scrollbar.set,
             )
 
-            self.table.pack(
+            self.tree.pack(
                 side=tk.LEFT,
                 fill=tk.BOTH,
                 expand=True,
@@ -99,12 +105,27 @@ if tk is not None:
                 fill=tk.Y,
             )
 
+            # -------------------------
+            # REFRESH BUTTON
+            # -------------------------
+            tk.Button(
+                self,
+                text="Refresh Outages",
+                command=self.load_outages,
+            ).pack(pady=(5, 20))
+
+            # Load database records
             self.load_outages()
 
         def load_outages(self) -> None:
-            """Load outages from SQLite."""
+            """Load outage records from the database."""
+
+            # Remove existing rows
+            for item in self.tree.get_children():
+                self.tree.delete(item)
 
             with sqlite3.connect(DATABASE_PATH) as connection:
+
                 cursor = connection.cursor()
 
                 cursor.execute(
@@ -117,7 +138,7 @@ if tk is not None:
                         outages.status,
                         outages.reported_at
                     FROM outages
-                    JOIN substations
+                    LEFT JOIN substations
                         ON outages.substation_id = substations.id
                     ORDER BY outages.id
                     """
@@ -126,7 +147,7 @@ if tk is not None:
                 rows = cursor.fetchall()
 
             for row in rows:
-                self.table.insert(
+                self.tree.insert(
                     "",
                     tk.END,
                     values=row,

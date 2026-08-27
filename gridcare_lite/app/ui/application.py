@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from gridcare_lite.app.config import GridCareConfig
+from gridcare_lite.app.ui.complaints_view import ComplaintsView
 from gridcare_lite.app.ui.dashboard_view import DashboardView
 from gridcare_lite.app.ui.login_view import LoginView
 from gridcare_lite.app.ui.outages_view import OutagesView
 from gridcare_lite.app.ui.substations_view import SubstationsView
-from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
+from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 
 
 if tk is not None:
@@ -53,6 +54,7 @@ if tk is not None:
                     self.show_substations,
                     self.show_outages,
                     self.show_work_orders,
+                    self.show_complaints,
                 )
             )
 
@@ -81,6 +83,16 @@ if tk is not None:
 
             self._swap_frame(
                 WorkOrdersView(
+                    self,
+                    self.show_dashboard,
+                )
+            )
+
+        def show_complaints(self) -> None:
+            """Display the complaints view."""
+
+            self._swap_frame(
+                ComplaintsView(
                     self,
                     self.show_dashboard,
                 )
