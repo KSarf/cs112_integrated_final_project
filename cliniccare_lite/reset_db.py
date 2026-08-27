@@ -1,7 +1,6 @@
 from cliniccare_lite.app import create_app
 from cliniccare_lite.app.extensions import db
 
-
 app = create_app()
 
 

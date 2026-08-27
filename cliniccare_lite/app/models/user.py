@@ -16,57 +16,64 @@ class User(db.Model, UserMixin):
 
     id = db.Column(
         db.Integer,
-        primary_key=True
+        primary_key=True,
     )
 
     username = db.Column(
         db.String(80),
         unique=True,
-        nullable=False
+        nullable=False,
+    )
+
+    full_name = db.Column(
+        db.String(120),
+        nullable=True,
+    )
+
+    email = db.Column(
+        db.String(120),
+        unique=True,
+        nullable=True,
     )
 
     password_hash = db.Column(
         db.String(255),
-        nullable=False
+        nullable=False,
     )
 
     role = db.Column(
         db.String(40),
         nullable=False,
-        default="patient"
+        default="patient",
     )
 
     def set_password(
         self,
-        password: str
+        password: str,
     ) -> None:
         """Hash and store a user's password."""
 
-        self.password_hash = (
-            bcrypt.generate_password_hash(
-                password
-            ).decode("utf-8")
-        )
+        self.password_hash = bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(
         self,
-        password: str
+        password: str,
     ) -> bool:
         """Check a password against its stored hash."""
 
         return bcrypt.check_password_hash(
             self.password_hash,
-            password
+            password,
         )
 
 
 @login_manager.user_loader
 def load_user(
-    user_id: str
+    user_id: str,
 ) -> User | None:
     """Load the logged-in user from the session."""
 
     return db.session.get(
         User,
-        int(user_id)
+        int(user_id),
     )

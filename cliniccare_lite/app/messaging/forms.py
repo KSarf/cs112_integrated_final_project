@@ -5,16 +5,8 @@ from wtforms.validators import DataRequired
 
 class MessageForm(FlaskForm):
 
-    recipient_username = StringField(
-        "Recipient Username",
-        validators=[DataRequired()]
-    )
+    recipient_username = StringField("Recipient Username", validators=[DataRequired()])
 
-    body = TextAreaField(
-        "Message",
-        validators=[DataRequired()]
-    )
+    body = TextAreaField("Message", validators=[DataRequired()])
 
-    submit = SubmitField(
-        "Send Message"
-    )
+    submit = SubmitField("Send Message")

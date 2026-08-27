@@ -2,7 +2,6 @@ from cliniccare_lite.app import create_app
 from cliniccare_lite.app.extensions import db
 from cliniccare_lite.app.models.user import User
 
-
 app = create_app()
 
 

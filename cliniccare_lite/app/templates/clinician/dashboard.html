@@ -8,6 +8,157 @@
     Welcome, {{ current_user.username }}.
 </p>
 
+
+<h4 class="mt-4">
+    Operational Summary
+</h4>
+
+<p class="text-muted">
+    Administrative activity only.
+</p>
+
+
+<div class="row mb-4">
+
+    <div class="col-md-3">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Total Tasks
+                </h5>
+
+                <h3>
+                    {{ analytics.total_tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Pending Tasks
+                </h5>
+
+                <h3>
+                    {{ analytics.pending_tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Submitted
+                </h5>
+
+                <h3>
+                    {{ analytics.submitted_tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Reviewed
+                </h5>
+
+                <h3>
+                    {{ analytics.reviewed_tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Needs Resubmission
+                </h5>
+
+                <h3>
+                    {{ analytics.resubmission_tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Total Submissions
+                </h5>
+
+                <h3>
+                    {{ analytics.total_submissions }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>
+                    Appointments
+                </h5>
+
+                <h3>
+                    {{ analytics.total_appointments }}
+                </h3>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
 <a href="{{ url_for('clinician.create_task') }}" class="btn btn-primary mb-4">
     Create Task
 </a>
@@ -16,7 +167,10 @@
     Schedule Appointment
 </a>
 
-<h4>Tasks I Created</h4>
+
+<h4>
+    Tasks I Created
+</h4>
 
 {% if tasks %}
 
@@ -35,12 +189,18 @@
         </p>
 
         <p>
-            <strong>Status:</strong>
+            <strong>
+                Status:
+            </strong>
+
             {{ task.status }}
         </p>
 
         <p>
-            <strong>Patient ID:</strong>
+            <strong>
+                Patient ID:
+            </strong>
+
             {{ task.patient_id }}
         </p>
 
@@ -62,7 +222,9 @@
 <hr class="my-4">
 
 
-<h4>Patient Submissions</h4>
+<h4>
+    Patient Submissions
+</h4>
 
 {% if submissions %}
 
@@ -73,12 +235,18 @@
     <div class="card-body">
 
         <p>
-            <strong>File:</strong>
+            <strong>
+                File:
+            </strong>
+
             {{ submission.file_name }}
         </p>
 
         <p>
-            <strong>Status:</strong>
+            <strong>
+                Status:
+            </strong>
+
             {{ submission.status }}
         </p>
 
@@ -94,12 +262,14 @@
 
         {% endif %}
 
+
         <a href="{{ url_for(
                         'clinician.download_submission',
                         submission_id=submission.id
                     ) }}" class="btn btn-secondary">
             Download File
         </a>
+
 
         <a href="{{ url_for(
                         'clinician.review_submission',
@@ -121,9 +291,14 @@
 </p>
 
 {% endif %}
+
+
 <hr class="my-4">
 
-<h4>Appointments</h4>
+
+<h4>
+    Appointments
+</h4>
 
 {% if appointments %}
 
@@ -138,19 +313,29 @@
         </h5>
 
         <p>
-            <strong>Date:</strong>
+            <strong>
+                Date:
+            </strong>
+
             {{ appointment.appointment_time }}
         </p>
 
         <p>
-            <strong>Status:</strong>
+            <strong>
+                Status:
+            </strong>
+
             {{ appointment.status }}
         </p>
 
         <p>
-            <strong>Patient ID:</strong>
+            <strong>
+                Patient ID:
+            </strong>
+
             {{ appointment.patient_id }}
         </p>
+
 
         <form method="post" action="{{ url_for(
                         'clinician.send_appointment_reminder',
@@ -173,7 +358,11 @@
 
 {% else %}
 
-<p>No appointments scheduled.</p>
+<p>
+    No appointments scheduled.
+</p>
 
 {% endif %}
+
+
 {% endblock %}

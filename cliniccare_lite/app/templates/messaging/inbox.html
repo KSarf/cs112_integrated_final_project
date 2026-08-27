@@ -4,7 +4,13 @@
 
 <h2>Messages</h2>
 
-<a href="{{ url_for('messaging.send_message') }}" class="btn btn-primary mb-4">
+<p class="text-muted">
+    Non-urgent administrative communication only.
+</p>
+
+<a href="{{ url_for(
+        'messaging.send_message'
+    ) }}" class="btn btn-primary mb-4">
     Send Message
 </a>
 
@@ -15,7 +21,8 @@
 
 {% for notification in notifications %}
 
-<div class="alert
+<div class="
+            alert
             {% if notification.is_read %}
                 alert-secondary
             {% else %}
@@ -53,9 +60,6 @@
 {% endif %}
 
 
-<hr>
-
-
 <h4>Received Messages</h4>
 
 {% if received_messages %}
@@ -66,14 +70,58 @@
 
     <div class="card-body">
 
+        {% if not message.is_read %}
+
+        <span class="badge bg-primary mb-2">
+            New
+        </span>
+
+        {% else %}
+
+        <span class="badge bg-secondary mb-2">
+            Read
+        </span>
+
+        {% endif %}
+
+
         <p>
             {{ message.body }}
         </p>
 
-        <small>
-            Sender ID:
-            {{ message.sender_id }}
+        <small class="text-muted">
+
+            From:
+            {{ usernames.get(
+            message.sender_id,
+            message.sender_id
+            ) }}
+
+            •
+
+            {{ message.created_at.strftime(
+            "%Y-%m-%d %H:%M"
+            ) }}
+
         </small>
+
+
+        {% if not message.is_read %}
+
+        <form method="post" action="{{ url_for(
+                            'messaging.mark_message_read',
+                            message_id=message.id
+                        ) }}" class="mt-2">
+
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <button type="submit" class="btn btn-sm btn-outline-primary">
+                Mark Message Read
+            </button>
+
+        </form>
+
+        {% endif %}
 
     </div>
 
@@ -86,9 +134,6 @@
 <p>No received messages.</p>
 
 {% endif %}
-
-
-<hr>
 
 
 <h4>Sent Messages</h4>
@@ -105,9 +150,28 @@
             {{ message.body }}
         </p>
 
-        <small>
-            Receiver ID:
-            {{ message.receiver_id }}
+        <small class="text-muted">
+
+            To:
+            {{ usernames.get(
+            message.receiver_id,
+            message.receiver_id
+            ) }}
+
+            •
+
+            {{ message.created_at.strftime(
+            "%Y-%m-%d %H:%M"
+            ) }}
+
+            •
+
+            {% if message.is_read %}
+            Read
+            {% else %}
+            Unread
+            {% endif %}
+
         </small>
 
     </div>

@@ -6,29 +6,16 @@
 
     <div class="card-body">
 
-        <h2>Create Task</h2>
+        <h2>Publish Announcement</h2>
 
         <p class="text-muted">
-            Assign a non-urgent administrative task to a patient.
+            Publish a clinic-wide administrative notice.
         </p>
 
 
         <form method="post">
 
             {{ form.hidden_tag() }}
-
-
-            <div class="mb-3">
-
-                {{ form.patient_username.label(
-                class_="form-label"
-                ) }}
-
-                {{ form.patient_username(
-                class_="form-control"
-                ) }}
-
-            </div>
 
 
             <div class="mb-3">
@@ -46,11 +33,11 @@
 
             <div class="mb-3">
 
-                {{ form.instructions.label(
+                {{ form.body.label(
                 class_="form-label"
                 ) }}
 
-                {{ form.instructions(
+                {{ form.body(
                 class_="form-control",
                 rows="5"
                 ) }}
@@ -58,15 +45,33 @@
             </div>
 
 
-            <div class="mb-4">
+            <div class="mb-3">
 
-                {{ form.due_date.label(
+                {{ form.priority.label(
                 class_="form-label"
                 ) }}
 
-                {{ form.due_date(
+                {{ form.priority(
+                class_="form-select"
+                ) }}
+
+            </div>
+
+
+            <div class="mb-4">
+
+                {{ form.expires_at.label(
+                class_="form-label"
+                ) }}
+
+                {{ form.expires_at(
                 class_="form-control"
                 ) }}
+
+                <div class="form-text">
+                    Optional. Leave blank if the announcement
+                    should not expire automatically.
+                </div>
 
             </div>
 

@@ -5,9 +5,6 @@ from wtforms import SubmitField
 
 class SubmissionForm(FlaskForm):
 
-    file = FileField(
-        "Upload File",
-        validators=[FileRequired()]
-    )
+    file = FileField("Upload File", validators=[FileRequired()])
 
     submit = SubmitField("Submit File")
