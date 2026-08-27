@@ -26,25 +26,34 @@ if tk is not None:
 
             tk.Label(
                 self,
-                text="GridCare-Lite Login",
-                font=("Arial", 16, "bold"),
-            ).pack(pady=15)
+                text="GridCare-Lite",
+                font=("Arial", 24, "bold"),
+            ).pack(pady=(35, 5))
+
+            tk.Label(
+                self,
+                text="Grid Infrastructure Management System",
+                font=("Arial", 11),
+            ).pack(pady=(0, 25))
 
             tk.Label(
                 self,
                 text="Username",
+                font=("Arial", 10, "bold"),
             ).pack()
 
-            self.username_entry = tk.Entry(self)
+            self.username_entry = tk.Entry(self, width=30)
             self.username_entry.pack(pady=5)
 
             tk.Label(
                 self,
                 text="Password",
-            ).pack()
+                font=("Arial", 10, "bold"),
+            ).pack(pady=(10, 0))
 
             self.password_entry = tk.Entry(
                 self,
+                width=30,
                 show="*",
             )
             self.password_entry.pack(pady=5)
@@ -52,27 +61,31 @@ if tk is not None:
             tk.Button(
                 self,
                 text="Login",
+                width=20,
                 command=self._attempt_login,
-            ).pack(pady=15)
+            ).pack(pady=20)
+
+            tk.Label(
+                self,
+                text="Demo login: demo / demo",
+                font=("Arial", 9),
+            ).pack(pady=5)
 
         def _attempt_login(self) -> None:
+            """Check login credentials."""
+
             username = self.username_entry.get().strip()
             password = self.password_entry.get().strip()
 
-            if (
-                self._config.enable_demo_login
-                and username == "demo"
-                and password == "demo"
-            ):
+            if username == "demo" and password == "demo":
                 self._on_success(username)
                 return
 
-            assert messagebox is not None
-
-            messagebox.showwarning(
-                "Login failed",
-                "Invalid username or password.",
-            )
+            if messagebox is not None:
+                messagebox.showwarning(
+                    "Login failed",
+                    "Invalid username or password.",
+                )
 
 
 else:
