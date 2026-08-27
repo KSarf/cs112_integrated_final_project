@@ -11,7 +11,6 @@ from gridcare_lite.app.ui.substations_view import SubstationsView
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 
-
 if tk is not None:
 
     class GridCareApplication(tk.Tk):
@@ -55,6 +54,7 @@ if tk is not None:
                     self.show_outages,
                     self.show_work_orders,
                     self.show_complaints,
+                    self.logout,
                 )
             )
 
@@ -98,6 +98,12 @@ if tk is not None:
                 )
             )
 
+        def logout(self) -> None:
+            """Log the current user out and return to the login screen."""
+
+            self._username = ""
+            self.show_login()
+
         def _swap_frame(self, frame: object) -> None:
             """Replace the current screen."""
 
@@ -109,7 +115,6 @@ if tk is not None:
                 fill=tk.BOTH,
                 expand=True,
             )
-
 
 else:
 

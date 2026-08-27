@@ -8,7 +8,6 @@ from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk, ttk
 
-
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
@@ -128,8 +127,7 @@ if tk is not None:
 
                 cursor = connection.cursor()
 
-                cursor.execute(
-                    """
+                cursor.execute("""
                     SELECT
                         outages.id,
                         outages.title,
@@ -141,8 +139,7 @@ if tk is not None:
                     LEFT JOIN substations
                         ON outages.substation_id = substations.id
                     ORDER BY outages.id
-                    """
-                )
+                    """)
 
                 rows = cursor.fetchall()
 
@@ -152,7 +149,6 @@ if tk is not None:
                     tk.END,
                     values=row,
                 )
-
 
 else:
 

@@ -8,7 +8,6 @@ from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 
-
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
@@ -49,6 +48,7 @@ if tk is not None:
             on_outages: Callable[[], None],
             on_work_orders: Callable[[], None],
             on_complaints: Callable[[], None],
+            on_logout: Callable[[], None],
         ) -> None:
             super().__init__(parent)
 
@@ -56,15 +56,26 @@ if tk is not None:
             self._on_outages = on_outages
             self._on_work_orders = on_work_orders
             self._on_complaints = on_complaints
+            self._on_logout = on_logout
 
             # -------------------------
             # HEADER
             # -------------------------
+            header_frame = tk.Frame(self)
+            header_frame.pack(fill=tk.X, padx=25, pady=(20, 5))
+
             tk.Label(
-                self,
+                header_frame,
                 text="GridCare-Lite Dashboard",
                 font=("Arial", 20, "bold"),
-            ).pack(pady=(20, 5))
+            ).pack(side=tk.LEFT)
+
+            tk.Button(
+                header_frame,
+                text="Logout",
+                width=12,
+                command=self._on_logout,
+            ).pack(side=tk.RIGHT)
 
             tk.Label(
                 self,
@@ -225,7 +236,6 @@ if tk is not None:
                 text=str(value),
                 font=("Arial", 20, "bold"),
             ).pack(pady=(5, 0))
-
 
 else:
 

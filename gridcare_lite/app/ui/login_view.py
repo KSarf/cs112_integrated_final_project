@@ -5,8 +5,8 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from gridcare_lite.app.config import GridCareConfig
+from gridcare_lite.app.services.auth_service import AuthService
 from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk
-
 
 if tk is not None:
 
@@ -67,7 +67,7 @@ if tk is not None:
 
             tk.Label(
                 self,
-                text="Demo login: demo / demo",
+                text="Use your GridCare account to login",
                 font=("Arial", 9),
             ).pack(pady=5)
 
@@ -77,8 +77,11 @@ if tk is not None:
             username = self.username_entry.get().strip()
             password = self.password_entry.get().strip()
 
-            if username == "demo" and password == "demo":
-                self._on_success(username)
+            auth_service = AuthService(self._config.database_path)
+            user = auth_service.authenticate(username, password)
+
+            if user is not None:
+                self._on_success(user.username)
                 return
 
             if messagebox is not None:
@@ -86,7 +89,6 @@ if tk is not None:
                     "Login failed",
                     "Invalid username or password.",
                 )
-
 
 else:
 

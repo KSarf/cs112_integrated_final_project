@@ -8,7 +8,6 @@ from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk, ttk
 
-
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
@@ -131,8 +130,7 @@ if tk is not None:
             with sqlite3.connect(DATABASE_PATH) as connection:
                 cursor = connection.cursor()
 
-                cursor.execute(
-                    """
+                cursor.execute("""
                     SELECT
                         work_orders.id,
                         outages.title,
@@ -146,8 +144,7 @@ if tk is not None:
                     LEFT JOIN users
                         ON work_orders.assigned_to = users.id
                     ORDER BY work_orders.id
-                    """
-                )
+                    """)
 
                 rows = cursor.fetchall()
 
@@ -157,7 +154,6 @@ if tk is not None:
                     tk.END,
                     values=row,
                 )
-
 
 else:
 

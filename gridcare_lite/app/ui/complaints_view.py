@@ -8,12 +8,11 @@ from datetime import datetime
 from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import (
+    messagebox,
     require_tkinter,
     tk,
     ttk,
-    messagebox,
 )
-
 
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
@@ -284,8 +283,7 @@ if tk is not None:
             with sqlite3.connect(DATABASE_PATH) as connection:
                 cursor = connection.cursor()
 
-                cursor.execute(
-                    """
+                cursor.execute("""
                     SELECT
                         id,
                         customer_name,
@@ -295,8 +293,7 @@ if tk is not None:
                         created_at
                     FROM complaints
                     ORDER BY id DESC
-                    """
-                )
+                    """)
 
                 complaints = cursor.fetchall()
 
@@ -384,9 +381,7 @@ if tk is not None:
                             return
 
                     # Generate the required created_at value.
-                    created_at = datetime.now().isoformat(
-                        timespec="seconds"
-                    )
+                    created_at = datetime.now().isoformat(timespec="seconds")
 
                     cursor.execute(
                         """
@@ -446,7 +441,6 @@ if tk is not None:
                 0,
                 tk.END,
             )
-
 
 else:
 

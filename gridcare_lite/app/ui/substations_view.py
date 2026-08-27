@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 from collections.abc import Callable
+from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk, ttk
-
 
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
@@ -84,9 +83,7 @@ if tk is not None:
                 command=self.table.yview,
             )
 
-            self.table.configure(
-                yscrollcommand=scrollbar.set
-            )
+            self.table.configure(yscrollcommand=scrollbar.set)
 
             self.table.pack(
                 side=tk.LEFT,
@@ -107,8 +104,7 @@ if tk is not None:
             with sqlite3.connect(DATABASE_PATH) as connection:
                 cursor = connection.cursor()
 
-                cursor.execute(
-                    """
+                cursor.execute("""
                     SELECT
                         id,
                         name,
@@ -118,8 +114,7 @@ if tk is not None:
                         status
                     FROM substations
                     ORDER BY id
-                    """
-                )
+                    """)
 
                 rows = cursor.fetchall()
 
@@ -129,7 +124,6 @@ if tk is not None:
                     tk.END,
                     values=row,
                 )
-
 
 else:
 

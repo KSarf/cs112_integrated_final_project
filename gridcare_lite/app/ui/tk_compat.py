@@ -14,6 +14,4 @@ except ModuleNotFoundError:  # pragma: no cover - environment-specific
 def require_tkinter() -> None:
     """Raise a helpful error when tkinter is unavailable."""
     if tk is None:
-        raise RuntimeError(
-            "tkinter is not available in this Python environment."
-        )
+        raise RuntimeError("tkinter is not available in this Python environment.")
