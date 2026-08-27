@@ -157,19 +157,47 @@ def main() -> None:
         fig_map.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
         st.plotly_chart(fig_map, use_container_width=True)
 
-   # --- TAB 4: RELIABILITY ---
+   # =========================================================================
+    # TAB 4: RELIABILITY & N-1 CONTINGENCY ANALYSIS
+    # =========================================================================
     elif view == "Reliability":
         st.subheader("Grid Reliability & Capacity Metrics")
-        st.write("Analysis of substation operational capacities and connection vulnerabilities.")
+        st.write("Analysis of substation operational capacities, network centrality, and N-1 resilience.")
         
-        degree_dict = dict(nx.degree(nx.Graph([(r["Source Substation ID"], r["Destination Substation ID"]) for _, r in filtered_lines.iterrows()])))
+        # ---------------------------------------------------------------------
+        # Part 1: Build the network graph to count connections per substation
+        # ---------------------------------------------------------------------
+        # Create an empty undirected graph using NetworkX
+        grid_graph = nx.Graph()
+        
+        # Loop through each row in the filtered transmission lines dataframe
+        for index, row in filtered_lines.iterrows():
+            source_id = row["Source Substation ID"]
+            target_id = row["Destination Substation ID"]
+            # Add an edge between the source and destination substations
+            grid_graph.add_edge(source_id, target_id)
+        
+        # Count how many lines connect to each substation (degree centrality)
+        degree_dict = dict(grid_graph.degree())
+        
+        # Convert the dictionary of connections into a clean pandas DataFrame
         deg_df = pd.DataFrame(list(degree_dict.items()), columns=["Substation ID", "Connections (Degree)"])
         
-        name_map = filtered_substations.set_index("Substation ID")["Name"].to_dict() if "Name" in filtered_substations.columns else {}
+        # Create a helper dictionary that maps each Substation ID to its Name
+        if "Name" in filtered_substations.columns:
+            name_map = dict(zip(filtered_substations["Substation ID"], filtered_substations["Name"]))
+        else:
+            name_map = {}
+            
+        # Map the substation names to our dataframe for readable labels
         deg_df["Substation Name"] = deg_df["Substation ID"].map(name_map).fillna(deg_df["Substation ID"])
         
-        # Horizontal layout for crisp, legible labels
+        # Pick the top 12 most-connected substations (critical hubs)
         top_hubs = deg_df.sort_values(by="Connections (Degree)", ascending=True).tail(12)
+        
+        # ---------------------------------------------------------------------
+        # Part 2: Plot horizontal bar chart of critical substations
+        # ---------------------------------------------------------------------
         fig_deg = px.bar(
             top_hubs,
             x="Connections (Degree)",
@@ -179,6 +207,8 @@ def main() -> None:
             color="Connections (Degree)",
             color_continuous_scale="Blues"
         )
+        
+        # Adjust chart margins and clean background
         fig_deg.update_layout(
             margin=dict(t=40, b=20, l=20, r=20),
             plot_bgcolor="rgba(0,0,0,0)",
@@ -186,7 +216,54 @@ def main() -> None:
             yaxis=dict(autorange="reversed")
         )
         st.plotly_chart(fig_deg, use_container_width=True)
+
+        st.divider()
+
+        # ---------------------------------------------------------------------
+        # Part 3: N-1 Contingency Failure Simulation
+        # ---------------------------------------------------------------------
+        st.subheader("N-1 Contingency Simulation")
+        st.caption("Simulate taking a major substation offline to check if the national network fragments.")
         
+        # Build the full baseline national network
+        full_graph = nx.Graph()
+        for index, row in lines.iterrows():
+            full_graph.add_edge(row["Source Substation ID"], row["Destination Substation ID"])
+            
+        # Count how many separate pieces (connected components) the grid has normally
+        initial_components = nx.number_connected_components(full_graph)
+        
+        # Dropdown menu to let the user pick which substation to fail
+        substation_names_list = sorted(substations["Name"].dropna().unique().tolist())
+        selected_fail_name = st.selectbox(
+            "Select Substation to Simulate Failure (N-1):",
+            substation_names_list,
+            index=0
+        )
+        
+        # Look up the matching Substation ID for the chosen name
+        matched_row = substations[substations["Name"] == selected_fail_name]
+        selected_fail_id = matched_row["Substation ID"].values[0]
+        
+        # Create a copy of the graph and remove the selected node
+        contingency_graph = full_graph.copy()
+        if contingency_graph.has_node(selected_fail_id):
+            contingency_graph.remove_node(selected_fail_id)
+            
+        # Count how many pieces the network has after the failure
+        post_components = nx.number_connected_components(contingency_graph)
+        
+        # Display side-by-side metric cards
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Base Network Islands", f"{initial_components}")
+        col2.metric("Post-Failure Islands", f"{post_components}")
+        
+        # Check if the grid remained connected or fragmented
+        if post_components == initial_components:
+            col3.success("Resilient: Grid remains fully connected with 0 fragmentation!")
+        else:
+            col3.error(f"Alert: Grid split into {post_components} separate isolated parts!")
+            
     # --- TAB 5: SEARCH & COMPARISON ---
     elif view == "Search":
         st.subheader("Substation Search & Line Inspector")
