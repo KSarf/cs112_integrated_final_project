@@ -4,21 +4,18 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+from collections.abc import Callable
 
-from gridcare_lite.app.ui.substations_view import SubstationsView
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 
 
-def get_database_path() -> Path:
-    """Return the path to the GridCare database."""
-    return Path("gridcare_lite/database/gridcare.db")
+DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
 def get_counts() -> tuple[int, int, int, int]:
     """Get basic statistics from the GridCare database."""
-    database_path = get_database_path()
 
-    with sqlite3.connect(database_path) as connection:
+    with sqlite3.connect(DATABASE_PATH) as connection:
         cursor = connection.cursor()
 
         cursor.execute("SELECT COUNT(*) FROM substations")
@@ -41,18 +38,24 @@ if tk is not None:
     class DashboardView(tk.Frame):
         """Main GridCare-Lite dashboard."""
 
-        def __init__(self, parent: object, username: str) -> None:
+        def __init__(
+            self,
+            parent: object,
+            username: str,
+            on_substations: Callable[[], None],
+            on_outages: Callable[[], None],
+        ) -> None:
             super().__init__(parent)
 
-            # -------------------------
-            # HEADER
-            # -------------------------
+            self._on_substations = on_substations
+            self._on_outages = on_outages
 
+            # Header
             tk.Label(
                 self,
                 text="GridCare-Lite Dashboard",
-                font=("Arial", 20, "bold"),
-            ).pack(pady=(20, 5))
+                font=("Arial", 22, "bold"),
+            ).pack(pady=(25, 5))
 
             tk.Label(
                 self,
@@ -60,10 +63,7 @@ if tk is not None:
                 font=("Arial", 12),
             ).pack(pady=(0, 20))
 
-            # -------------------------
-            # DATABASE STATISTICS
-            # -------------------------
-
+            # Statistics
             substations, lines, outages, work_orders = get_counts()
 
             stats_frame = tk.Frame(self)
@@ -97,37 +97,37 @@ if tk is not None:
                 3,
             )
 
-            # -------------------------
-            # STATUS MESSAGE
-            # -------------------------
+            # Navigation
+            navigation_frame = tk.Frame(self)
+            navigation_frame.pack(pady=30)
+
+            tk.Button(
+                navigation_frame,
+                text="View Substations",
+                width=20,
+                command=self._on_substations,
+            ).grid(
+                row=0,
+                column=0,
+                padx=10,
+            )
+
+            tk.Button(
+                navigation_frame,
+                text="View Outages",
+                width=20,
+                command=self._on_outages,
+            ).grid(
+                row=0,
+                column=1,
+                padx=10,
+            )
 
             tk.Label(
                 self,
                 text="Grid infrastructure data loaded successfully.",
                 font=("Arial", 11),
-            ).pack(pady=25)
-
-            # -------------------------
-            # SUBSTATIONS BUTTON
-            # -------------------------
-
-            tk.Button(
-                self,
-                text="View Substations",
-                font=("Arial", 11, "bold"),
-                command=self.show_substations,
             ).pack(pady=10)
-
-        def show_substations(self) -> None:
-            """Open the substations window."""
-
-            window = tk.Toplevel(self)
-
-            window.title("GridCare-Lite - Substations")
-            window.geometry("850x500")
-
-            view = SubstationsView(window)
-            view.pack(fill=tk.BOTH, expand=True)
 
         def _create_stat(
             self,

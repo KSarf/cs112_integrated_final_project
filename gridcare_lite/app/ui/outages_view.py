@@ -1,4 +1,4 @@
-"""Substations view for GridCare-Lite."""
+"""Outages view for GridCare-Lite."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 if tk is not None:
 
-    class SubstationsView(tk.Frame):
-        """Display substations stored in the GridCare database."""
+    class OutagesView(tk.Frame):
+        """Display reported grid outages."""
 
         def __init__(
             self,
@@ -29,7 +29,7 @@ if tk is not None:
             # Header
             tk.Label(
                 self,
-                text="Substations",
+                text="Grid Outages",
                 font=("Arial", 20, "bold"),
             ).pack(pady=15)
 
@@ -40,7 +40,7 @@ if tk is not None:
                 command=self._on_back,
             ).pack(pady=(0, 10))
 
-            # Table container
+            # Table
             table_frame = tk.Frame(self)
             table_frame.pack(
                 fill=tk.BOTH,
@@ -51,11 +51,11 @@ if tk is not None:
 
             columns = (
                 "id",
-                "name",
-                "region",
-                "voltage",
-                "capacity",
+                "title",
+                "substation",
+                "severity",
                 "status",
+                "reported_at",
             )
 
             self.table = ttk.Treeview(
@@ -65,18 +65,18 @@ if tk is not None:
             )
 
             self.table.heading("id", text="ID")
-            self.table.heading("name", text="Name")
-            self.table.heading("region", text="Region")
-            self.table.heading("voltage", text="Voltage (kV)")
-            self.table.heading("capacity", text="Capacity (MVA)")
+            self.table.heading("title", text="Title")
+            self.table.heading("substation", text="Substation")
+            self.table.heading("severity", text="Severity")
             self.table.heading("status", text="Status")
+            self.table.heading("reported_at", text="Reported At")
 
             self.table.column("id", width=50)
-            self.table.column("name", width=220)
-            self.table.column("region", width=130)
-            self.table.column("voltage", width=100)
-            self.table.column("capacity", width=110)
-            self.table.column("status", width=100)
+            self.table.column("title", width=220)
+            self.table.column("substation", width=180)
+            self.table.column("severity", width=100)
+            self.table.column("status", width=120)
+            self.table.column("reported_at", width=160)
 
             scrollbar = ttk.Scrollbar(
                 table_frame,
@@ -99,10 +99,10 @@ if tk is not None:
                 fill=tk.Y,
             )
 
-            self.load_substations()
+            self.load_outages()
 
-        def load_substations(self) -> None:
-            """Load substations from SQLite."""
+        def load_outages(self) -> None:
+            """Load outages from SQLite."""
 
             with sqlite3.connect(DATABASE_PATH) as connection:
                 cursor = connection.cursor()
@@ -110,14 +110,16 @@ if tk is not None:
                 cursor.execute(
                     """
                     SELECT
-                        id,
-                        name,
-                        region,
-                        voltage_kv,
-                        capacity_mva,
-                        status
-                    FROM substations
-                    ORDER BY id
+                        outages.id,
+                        outages.title,
+                        substations.name,
+                        outages.severity,
+                        outages.status,
+                        outages.reported_at
+                    FROM outages
+                    JOIN substations
+                        ON outages.substation_id = substations.id
+                    ORDER BY outages.id
                     """
                 )
 
@@ -133,7 +135,7 @@ if tk is not None:
 
 else:
 
-    class SubstationsView:  # pragma: no cover
+    class OutagesView:  # pragma: no cover
         """Fallback when Tkinter is unavailable."""
 
         def __init__(
