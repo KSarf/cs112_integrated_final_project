@@ -1,26 +1,72 @@
-"""Authentication service placeholders for GridCare-Lite."""
+"""Authentication services for GridCare-Lite."""
 
 from __future__ import annotations
 
+import sqlite3
 from dataclasses import dataclass
+from pathlib import Path
 
-from gridcare_lite.app.config import GridCareConfig
 from gridcare_lite.app.security.passwords import verify_password
 
 
 @dataclass(slots=True)
+class AuthenticatedUser:
+    """Information about a successfully authenticated user."""
+
+    user_id: int
+    username: str
+    role: str
+
+
+@dataclass(slots=True)
 class AuthService:
-    """Auth service implementing development-only demo login behavior."""
+    """Authenticate users against the GridCare database."""
 
-    config: GridCareConfig
+    database_path: Path
 
-    def demo_login_allowed(
-        self, username: str, password: str, password_hash: str
-    ) -> bool:
-        """Allow demo login only when explicitly enabled in config.
+    def authenticate(
+        self,
+        username: str,
+        password: str,
+    ) -> AuthenticatedUser | None:
+        """Authenticate a user and return their account information."""
 
-        TODO: Replace with proper persistent user authentication flow.
-        """
-        if not self.config.enable_demo_login:
-            return False
-        return username == "demo" and verify_password(password, password_hash)
+        with sqlite3.connect(self.database_path) as connection:
+            cursor = connection.cursor()
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    username,
+                    password_hash,
+                    role
+                FROM users
+                WHERE username = ?
+                """,
+                (username,),
+            )
+
+            user = cursor.fetchone()
+
+        if user is None:
+            return None
+
+        user_id, stored_username, password_hash, role = user
+
+        try:
+            valid_password = verify_password(
+                password,
+                password_hash,
+            )
+        except (ValueError, TypeError):
+            return None
+
+        if not valid_password:
+            return None
+
+        return AuthenticatedUser(
+            user_id=user_id,
+            username=stored_username,
+            role=role,
+        )
