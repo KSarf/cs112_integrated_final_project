@@ -1,1 +1,0 @@
-"""GridCare-Lite application package."""

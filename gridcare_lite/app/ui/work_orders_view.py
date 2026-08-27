@@ -8,7 +8,6 @@ from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk, ttk
 
-
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
@@ -349,8 +348,7 @@ if tk is not None:
                 with sqlite3.connect(DATABASE_PATH) as connection:
                     cursor = connection.cursor()
 
-                    cursor.execute(
-                        """
+                    cursor.execute("""
                         SELECT
                             id,
                             outage_id,
@@ -362,8 +360,7 @@ if tk is not None:
                             completed_at
                         FROM work_orders
                         ORDER BY id
-                        """
-                    )
+                        """)
 
                     rows = cursor.fetchall()
 
@@ -382,7 +379,6 @@ if tk is not None:
 
             except sqlite3.Error as error:
                 print(f"Could not load work orders: {error}")
-
 
 else:
 

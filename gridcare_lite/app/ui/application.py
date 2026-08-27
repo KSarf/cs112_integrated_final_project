@@ -8,9 +8,8 @@ from gridcare_lite.app.ui.dashboard_view import DashboardView
 from gridcare_lite.app.ui.login_view import LoginView
 from gridcare_lite.app.ui.outages_view import OutagesView
 from gridcare_lite.app.ui.substations_view import SubstationsView
-from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
-
+from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 
 if tk is not None:
 
@@ -100,7 +99,6 @@ if tk is not None:
                 fill=tk.BOTH,
                 expand=True,
             )
-
 
 else:
 

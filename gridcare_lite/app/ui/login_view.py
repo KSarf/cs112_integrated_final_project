@@ -1,4 +1,3 @@
-
 """Login view for GridCare-Lite."""
 
 from __future__ import annotations
@@ -8,7 +7,6 @@ from collections.abc import Callable
 from gridcare_lite.app.config import GridCareConfig
 from gridcare_lite.app.services.auth_service import AuthService
 from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk
-
 
 if tk is not None:
 
@@ -217,9 +215,7 @@ if tk is not None:
                     )
                 return
 
-            auth_service = AuthService(
-                self._config.database_path
-            )
+            auth_service = AuthService(self._config.database_path)
 
             user = auth_service.authenticate(
                 username,
@@ -236,7 +232,6 @@ if tk is not None:
                     "Invalid username or password.",
                 )
 
-
 else:
 
     class LoginView:  # pragma: no cover
@@ -249,4 +244,3 @@ else:
         ) -> None:
             _ = args, kwargs
             require_tkinter()
-

@@ -9,7 +9,6 @@ from gridcare_lite.app.config import GridCareConfig
 from gridcare_lite.app.security.passwords import hash_password
 from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk
 
-
 if tk is not None:
 
     class RegisterView(tk.Frame):
@@ -166,9 +165,7 @@ if tk is not None:
                 10,
             )
 
-            self.role_var = tk.StringVar(
-                value="Engineer"
-            )
+            self.role_var = tk.StringVar(value="Engineer")
 
             self.role_menu = tk.OptionMenu(
                 form,
@@ -190,9 +187,7 @@ if tk is not None:
                 highlightbackground=self.BORDER,
             )
 
-            self.role_menu["menu"].config(
-                font=(self.FONT, 10)
-            )
+            self.role_menu["menu"].config(font=(self.FONT, 10))
 
             self.role_menu.grid(
                 row=11,
@@ -239,9 +234,7 @@ if tk is not None:
                 relief=tk.FLAT,
                 bd=0,
                 cursor="hand2",
-            ).pack(
-                pady=(12, 0)
-            )
+            ).pack(pady=(12, 0))
 
             tk.Label(
                 card,
@@ -249,9 +242,7 @@ if tk is not None:
                 font=(self.FONT, 8),
                 bg=self.WHITE,
                 fg=self.MUTED,
-            ).pack(
-                pady=(8, 0)
-            )
+            ).pack(pady=(8, 0))
 
             self.full_name_entry.focus_set()
 
@@ -316,51 +307,35 @@ if tk is not None:
             role = self.role_var.get()
 
             if not full_name:
-                self._warning(
-                    "Please enter your full name."
-                )
+                self._warning("Please enter your full name.")
                 return
 
             if not email:
-                self._warning(
-                    "Please enter your email address."
-                )
+                self._warning("Please enter your email address.")
                 return
 
             if "@" not in email or "." not in email:
-                self._warning(
-                    "Please enter a valid email address."
-                )
+                self._warning("Please enter a valid email address.")
                 return
 
             if not username:
-                self._warning(
-                    "Please choose a username."
-                )
+                self._warning("Please choose a username.")
                 return
 
             if len(username) < 3:
-                self._warning(
-                    "Username must contain at least 3 characters."
-                )
+                self._warning("Username must contain at least 3 characters.")
                 return
 
             if not password:
-                self._warning(
-                    "Please create a password."
-                )
+                self._warning("Please create a password.")
                 return
 
             if len(password) < 8:
-                self._warning(
-                    "Password must contain at least 8 characters."
-                )
+                self._warning("Password must contain at least 8 characters.")
                 return
 
             if password != confirm_password:
-                self._warning(
-                    "Passwords do not match."
-                )
+                self._warning("Passwords do not match.")
                 return
 
             database_path = self._config.database_path
@@ -379,9 +354,7 @@ if tk is not None:
                     )
 
                     if cursor.fetchone() is not None:
-                        self._warning(
-                            "That username is already in use."
-                        )
+                        self._warning("That username is already in use.")
                         return
 
                     cursor.execute(
@@ -394,14 +367,10 @@ if tk is not None:
                     )
 
                     if cursor.fetchone() is not None:
-                        self._warning(
-                            "That email address is already registered."
-                        )
+                        self._warning("That email address is already registered.")
                         return
 
-                    password_hash = hash_password(
-                        password
-                    )
+                    password_hash = hash_password(password)
 
                     cursor.execute(
                         """
@@ -477,7 +446,6 @@ if tk is not None:
             )
 
             self.role_var.set("Engineer")
-
 
 else:
 

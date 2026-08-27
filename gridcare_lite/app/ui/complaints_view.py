@@ -568,8 +568,7 @@ if tk is not None:
                 with sqlite3.connect(DATABASE_PATH) as connection:
                     cursor = connection.cursor()
 
-                    cursor.execute(
-                        """
+                    cursor.execute("""
                         SELECT
                             id,
                             customer_name,
@@ -579,8 +578,7 @@ if tk is not None:
                             created_at
                         FROM complaints
                         ORDER BY id DESC
-                        """
-                    )
+                        """)
 
                     complaints = cursor.fetchall()
 
@@ -631,26 +629,14 @@ if tk is not None:
         def _submit_complaint(self) -> None:
             """Save a new complaint to the database."""
 
-            customer_name = (
-                self.customer_name_entry
-                .get()
-                .strip()
-            )
+            customer_name = self.customer_name_entry.get().strip()
 
-            details = (
-                self.details_text
-                .get(
-                    "1.0",
-                    tk.END,
-                )
-                .strip()
-            )
+            details = self.details_text.get(
+                "1.0",
+                tk.END,
+            ).strip()
 
-            outage_id_text = (
-                self.outage_id_entry
-                .get()
-                .strip()
-            )
+            outage_id_text = self.outage_id_entry.get().strip()
 
             if not customer_name:
                 messagebox.showwarning(
@@ -695,9 +681,7 @@ if tk is not None:
                             )
                             return
 
-                    created_at = datetime.now().isoformat(
-                        timespec="seconds"
-                    )
+                    created_at = datetime.now().isoformat(timespec="seconds")
 
                     cursor.execute(
                         """
@@ -755,7 +739,6 @@ if tk is not None:
             )
 
             self.customer_name_entry.focus_set()
-
 
 else:
 

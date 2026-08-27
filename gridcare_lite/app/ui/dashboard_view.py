@@ -8,7 +8,6 @@ from pathlib import Path
 
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 
-
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 
@@ -33,13 +32,11 @@ def get_dashboard_data() -> dict[str, object]:
         cursor.execute("SELECT COUNT(*) FROM complaints")
         complaints = cursor.fetchone()[0]
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT severity, COUNT(*)
             FROM outages
             GROUP BY severity
-            """
-        )
+            """)
 
         severity_rows = cursor.fetchall()
 
@@ -53,13 +50,11 @@ def get_dashboard_data() -> dict[str, object]:
         for level, count in severity_rows:
             severity[level] = count
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT status, COUNT(*)
             FROM work_orders
             GROUP BY status
-            """
-        )
+            """)
 
         work_order_rows = cursor.fetchall()
 
@@ -74,8 +69,7 @@ def get_dashboard_data() -> dict[str, object]:
         for status, count in work_order_rows:
             work_status[status] = count
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT
                 outages.id,
                 outages.title,
@@ -88,8 +82,7 @@ def get_dashboard_data() -> dict[str, object]:
                 ON outages.substation_id = substations.id
             ORDER BY outages.id DESC
             LIMIT 5
-            """
-        )
+            """)
 
         recent_outages = cursor.fetchall()
 
@@ -331,16 +324,8 @@ if tk is not None:
                     10,
                     "bold" if active else "normal",
                 ),
-                bg=(
-                    self.SIDEBAR_HOVER
-                    if active
-                    else self.SIDEBAR
-                ),
-                fg=(
-                    self.WHITE
-                    if active
-                    else "#BCCCDC"
-                ),
+                bg=(self.SIDEBAR_HOVER if active else self.SIDEBAR),
+                fg=(self.WHITE if active else "#BCCCDC"),
                 activebackground=self.SIDEBAR_HOVER,
                 activeforeground=self.WHITE,
                 relief=tk.FLAT,
@@ -758,10 +743,7 @@ if tk is not None:
 
                 tk.Label(
                     details,
-                    text=(
-                        f"{substation or 'Unknown substation'} "
-                        f"• {reported_at}"
-                    ),
+                    text=(f"{substation or 'Unknown substation'} " f"• {reported_at}"),
                     font=(self.FONT, 8),
                     bg=self.WHITE,
                     fg=self.MUTED,
@@ -923,7 +905,6 @@ if tk is not None:
                 bg=self.WHITE,
                 fg=self.TEXT,
             ).pack(side=tk.RIGHT)
-
 
 else:
 

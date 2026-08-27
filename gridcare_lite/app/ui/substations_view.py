@@ -394,8 +394,7 @@ if tk is not None:
                 with sqlite3.connect(DATABASE_PATH) as connection:
                     cursor = connection.cursor()
 
-                    cursor.execute(
-                        """
+                    cursor.execute("""
                         SELECT
                             id,
                             name,
@@ -405,8 +404,7 @@ if tk is not None:
                             status
                         FROM substations
                         ORDER BY id
-                        """
-                    )
+                        """)
 
                     rows = cursor.fetchall()
 
@@ -431,10 +429,7 @@ if tk is not None:
                     text="Unable to load substations",
                 )
 
-                print(
-                    f"Could not load substations: {error}"
-                )
-
+                print(f"Could not load substations: {error}")
 
 else:
 
