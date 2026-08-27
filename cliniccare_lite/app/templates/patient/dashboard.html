@@ -1,5 +1,49 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Patient Dashboard (Placeholder)</h2>
-<p>TODO: Implement patient administrative communication workflow.</p>
+
+<h2>Patient Dashboard</h2>
+
+<p>Welcome, {{ current_user.username }}.</p>
+
+<h4 class="mt-4">My Tasks</h4>
+
+{% if tasks %}
+
+{% for task in tasks %}
+
+<div class="card mb-3">
+    <div class="card-body">
+
+        <h5>{{ task.title }}</h5>
+
+        <p>{{ task.instructions }}</p>
+
+        <p>
+            <strong>Status:</strong>
+            {{ task.status }}
+        </p>
+        {% if task.status == "Pending" %}
+
+        <a href="{{ url_for('patient.submit_task', task_id=task.id) }}" class="btn btn-primary">
+            Submit File
+        </a>
+
+        {% endif %}
+        {% if task.status == "Submitted" %}
+
+        <p>File uploaded.</p>
+
+        {% endif %}
+    </div>
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>You currently have no assigned tasks.</p>
+
+{% endif %}
+
 {% endblock %}

@@ -6,7 +6,33 @@ from cliniccare_lite.app.extensions import db
 
 
 class Submission(db.Model):
-    """Patient submission placeholder model."""
 
     id = db.Column(db.Integer, primary_key=True)
-    file_name = db.Column(db.String(255), nullable=False)
+
+    task_id = db.Column(
+        db.Integer,
+        db.ForeignKey("task.id"),
+        nullable=False
+    )
+
+    patient_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
+
+    file_name = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(40),
+        nullable=False,
+        default="Submitted"
+    )
+
+    review_notes = db.Column(
+        db.Text,
+        nullable=True
+    )
