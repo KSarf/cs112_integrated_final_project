@@ -1,3 +1,4 @@
+
 """Professional dashboard view for GridCare-Lite."""
 
 from __future__ import annotations
@@ -176,13 +177,13 @@ if tk is not None:
             logo_frame.pack(
                 fill=tk.X,
                 padx=22,
-                pady=(28, 30),
+                pady=(28, 35),
             )
 
             tk.Label(
                 logo_frame,
                 text="⚡",
-                font=(self.FONT, 28, "bold"),
+                font=(self.FONT, 30, "bold"),
                 bg=self.SIDEBAR,
                 fg="#7FDBFF",
             ).pack(side=tk.LEFT)
@@ -376,7 +377,7 @@ if tk is not None:
             header = tk.Frame(
                 main,
                 bg=self.WHITE,
-                height=105,
+                height=82,
             )
 
             header.pack(fill=tk.X)
@@ -390,26 +391,26 @@ if tk is not None:
             title_frame.pack(
                 side=tk.LEFT,
                 padx=32,
-                pady=16,
+                pady=15,
             )
 
             tk.Label(
                 title_frame,
-                text="GridCare-Lite",
-                font=(self.FONT, 22, "bold"),
+                text="Operations Dashboard",
+                font=(self.FONT, 20, "bold"),
                 bg=self.WHITE,
                 fg=self.TEXT,
             ).pack(anchor="w")
 
             tk.Label(
                 title_frame,
-                text="National & Infrastructure Monitoring",
-                font=(self.FONT, 11),
+                text="National grid infrastructure monitoring",
+                font=(self.FONT, 10),
                 bg=self.WHITE,
                 fg=self.MUTED,
             ).pack(
                 anchor="w",
-                pady=(3, 0),
+                pady=(2, 0),
             )
 
             status_frame = tk.Frame(
@@ -425,7 +426,7 @@ if tk is not None:
             tk.Label(
                 status_frame,
                 text="●",
-                font=(self.FONT, 12),
+                font=(self.FONT, 13),
                 bg=self.WHITE,
                 fg=self.GREEN,
             ).pack(side=tk.LEFT)
@@ -447,7 +448,7 @@ if tk is not None:
                 fill=tk.BOTH,
                 expand=True,
                 padx=32,
-                pady=25,
+                pady=27,
             )
 
             tk.Label(
@@ -466,7 +467,7 @@ if tk is not None:
                 fg=self.MUTED,
             ).pack(
                 anchor="w",
-                pady=(3, 18),
+                pady=(3, 20),
             )
 
             stats = tk.Frame(
@@ -529,7 +530,7 @@ if tk is not None:
             lower.pack(
                 fill=tk.BOTH,
                 expand=True,
-                pady=(22, 0),
+                pady=(24, 0),
             )
 
             left = tk.Frame(
@@ -937,3 +938,4 @@ else:
         ) -> None:
             _ = args, kwargs
             require_tkinter()
+

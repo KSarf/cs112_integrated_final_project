@@ -5,9 +5,9 @@ from __future__ import annotations
 import subprocess
 
 CHECKS = [
-    ["ruff", "check", "."],
-    ["black", "--check", "."],
-    ["pytest"],
+    ["python", "-m", "ruff", "check", "."],
+    ["python", "-m", "black", "--check", "."],
+    ["python", "-m", "pytest"],
 ]
 
 

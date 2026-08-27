@@ -1,4 +1,4 @@
-"""Outages view for GridCare-Lite."""
+"""Substations view for GridCare-Lite."""
 
 from __future__ import annotations
 
@@ -14,8 +14,8 @@ DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
 if tk is not None:
 
-    class OutagesView(tk.Frame):
-        """Display reported grid outages."""
+    class SubstationsView(tk.Frame):
+        """Display substations stored in the GridCare database."""
 
         def __init__(
             self,
@@ -33,10 +33,10 @@ if tk is not None:
             self._build_table()
             self._build_footer()
 
-            self.load_outages()
+            self.load_substations()
 
         def _setup_styles(self) -> None:
-            """Configure table styling."""
+            """Configure the table appearance."""
 
             style = ttk.Style(self)
 
@@ -46,17 +46,17 @@ if tk is not None:
                 pass
 
             style.configure(
-                "Outages.Treeview",
+                "Substations.Treeview",
                 background="white",
                 foreground="#1F2937",
-                rowheight=40,
+                rowheight=38,
                 fieldbackground="white",
                 font=("Segoe UI", 10),
                 borderwidth=0,
             )
 
             style.configure(
-                "Outages.Treeview.Heading",
+                "Substations.Treeview.Heading",
                 background="#EEF2F7",
                 foreground="#1F2937",
                 font=("Segoe UI Semibold", 10),
@@ -64,7 +64,7 @@ if tk is not None:
             )
 
             style.map(
-                "Outages.Treeview",
+                "Substations.Treeview",
                 background=[("selected", "#DCEBFF")],
                 foreground=[("selected", "#111827")],
             )
@@ -82,7 +82,7 @@ if tk is not None:
                 pady=(30, 20),
             )
 
-            tk.Button(
+            back_button = tk.Button(
                 header,
                 text="←  Dashboard",
                 command=self._on_back,
@@ -96,14 +96,15 @@ if tk is not None:
                 padx=15,
                 pady=8,
                 cursor="hand2",
-            ).pack(
+            )
+            back_button.pack(
                 anchor="w",
                 pady=(0, 18),
             )
 
             tk.Label(
                 header,
-                text="Outages",
+                text="Substations",
                 bg="#F7F9FC",
                 fg="#111827",
                 font=("Segoe UI Semibold", 26),
@@ -113,7 +114,7 @@ if tk is not None:
 
             tk.Label(
                 header,
-                text="Monitor reported outages and their current status.",
+                text="View and monitor substations across the electricity grid.",
                 bg="#F7F9FC",
                 fg="#6B7280",
                 font=("Segoe UI", 11),
@@ -123,7 +124,7 @@ if tk is not None:
             )
 
         def _build_table(self) -> None:
-            """Create the outages table."""
+            """Create the substations table."""
 
             card = tk.Frame(
                 self,
@@ -151,18 +152,18 @@ if tk is not None:
 
             columns = (
                 "id",
-                "title",
-                "substation",
-                "severity",
+                "name",
+                "region",
+                "voltage",
+                "capacity",
                 "status",
-                "reported_at",
             )
 
             self.table = ttk.Treeview(
                 table_frame,
                 columns=columns,
                 show="headings",
-                style="Outages.Treeview",
+                style="Substations.Treeview",
             )
 
             self.table.heading(
@@ -171,18 +172,23 @@ if tk is not None:
             )
 
             self.table.heading(
-                "title",
-                text="Outage",
-            )
-
-            self.table.heading(
-                "substation",
+                "name",
                 text="Substation",
             )
 
             self.table.heading(
-                "severity",
-                text="Severity",
+                "region",
+                text="Region",
+            )
+
+            self.table.heading(
+                "voltage",
+                text="Voltage (kV)",
+            )
+
+            self.table.heading(
+                "capacity",
+                text="Capacity (MVA)",
             )
 
             self.table.heading(
@@ -190,96 +196,67 @@ if tk is not None:
                 text="Status",
             )
 
-            self.table.heading(
-                "reported_at",
-                text="Reported",
-            )
-
             self.table.column(
                 "id",
-                width=55,
-                minwidth=55,
+                width=60,
+                minwidth=60,
                 anchor=tk.CENTER,
             )
 
             self.table.column(
-                "title",
-                width=270,
+                "name",
+                width=260,
                 minwidth=180,
                 anchor=tk.W,
             )
 
             self.table.column(
-                "substation",
+                "region",
                 width=180,
                 minwidth=130,
                 anchor=tk.W,
             )
 
             self.table.column(
-                "severity",
-                width=110,
-                minwidth=90,
-                anchor=tk.CENTER,
-            )
-
-            self.table.column(
-                "status",
-                width=130,
+                "voltage",
+                width=140,
                 minwidth=100,
                 anchor=tk.CENTER,
             )
 
             self.table.column(
-                "reported_at",
-                width=170,
-                minwidth=130,
+                "capacity",
+                width=150,
+                minwidth=110,
                 anchor=tk.CENTER,
             )
 
-            vertical_scrollbar = ttk.Scrollbar(
+            self.table.column(
+                "status",
+                width=140,
+                minwidth=100,
+                anchor=tk.CENTER,
+            )
+
+            scrollbar = ttk.Scrollbar(
                 table_frame,
                 orient=tk.VERTICAL,
                 command=self.table.yview,
             )
 
-            horizontal_scrollbar = ttk.Scrollbar(
-                table_frame,
-                orient=tk.HORIZONTAL,
-                command=self.table.xview,
-            )
-
             self.table.configure(
-                yscrollcommand=vertical_scrollbar.set,
-                xscrollcommand=horizontal_scrollbar.set,
+                yscrollcommand=scrollbar.set,
             )
 
-            self.table.grid(
-                row=0,
-                column=0,
-                sticky="nsew",
+            self.table.pack(
+                side=tk.LEFT,
+                fill=tk.BOTH,
+                expand=True,
             )
 
-            vertical_scrollbar.grid(
-                row=0,
-                column=1,
-                sticky="ns",
-            )
-
-            horizontal_scrollbar.grid(
-                row=1,
-                column=0,
-                sticky="ew",
-            )
-
-            table_frame.rowconfigure(
-                0,
-                weight=1,
-            )
-
-            table_frame.columnconfigure(
-                0,
-                weight=1,
+            scrollbar.pack(
+                side=tk.RIGHT,
+                fill=tk.Y,
             )
 
         def _build_footer(self) -> None:
@@ -298,7 +275,7 @@ if tk is not None:
             tk.Button(
                 footer,
                 text="Refresh",
-                command=self.load_outages,
+                command=self.load_substations,
                 bg="#1F2937",
                 fg="white",
                 activebackground="#374151",
@@ -313,8 +290,8 @@ if tk is not None:
                 side=tk.RIGHT,
             )
 
-        def load_outages(self) -> None:
-            """Load outages from the SQLite database."""
+        def load_substations(self) -> None:
+            """Load substations from the SQLite database."""
 
             for item in self.table.get_children():
                 self.table.delete(item)
@@ -326,41 +303,33 @@ if tk is not None:
                     cursor.execute(
                         """
                         SELECT
-                            outages.id,
-                            outages.title,
-                            substations.name,
-                            outages.severity,
-                            outages.status,
-                            outages.reported_at
-                        FROM outages
-                        LEFT JOIN substations
-                            ON outages.substation_id = substations.id
-                        ORDER BY outages.id
+                            id,
+                            name,
+                            region,
+                            voltage_kv,
+                            capacity_mva,
+                            status
+                        FROM substations
+                        ORDER BY id
                         """
                     )
 
                     rows = cursor.fetchall()
 
                 for row in rows:
-                    display_row = list(row)
-
-                    for index, value in enumerate(display_row):
-                        if value is None:
-                            display_row[index] = "-"
-
                     self.table.insert(
                         "",
                         tk.END,
-                        values=display_row,
+                        values=row,
                     )
 
             except sqlite3.Error as error:
-                print(f"Could not load outages: {error}")
+                print(f"Could not load substations: {error}")
 
 
 else:
 
-    class OutagesView:  # pragma: no cover
+    class SubstationsView:  # pragma: no cover
         """Fallback when Tkinter is unavailable."""
 
         def __init__(
