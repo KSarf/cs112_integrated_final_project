@@ -12,7 +12,12 @@ This repository contains the three integrated components developed for the Ashes
 
 **Team:** Team 12
 
-> Before final submission, add every team member's full name and student ID here.
+| Team Member | Student ID |
+|---|---|
+| Joel Jackson Paddy | 81602029 |
+| Samulla Clotilda Owusu-Duodu | 03152029 |
+| George Yirenkyi Bekoe | 43442029 |
+| Nana Sarfo Baah Ampofo | 92712029 |
 
 ## Repository
 
@@ -259,7 +264,6 @@ Final submission reports, presentation slides, and demonstration videos should b
 
 Before submission, confirm that:
 
-- every team member's full name and student ID is added to the Team section above
 - the repository is public
 - the final reports are included
 - presentation slides are included
