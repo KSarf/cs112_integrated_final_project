@@ -54,8 +54,8 @@ flowchart LR
 flowchart LR
     ALLOWED["Allowed\nAdministrative tasks\nFile submission/review\nMessaging\nAppointments\nAnnouncements\nOperational analytics"]
     SYSTEM[ClinicCare-Lite]
-    PROHIBITED["Not implemented\nDiagnosis\nSymptom interpretation\nDisease-risk scoring\nTreatment recommendations\nPrescribing\nEmergency care"]
+    PROHIBITED["Excluded from scope\nDiagnosis\nSymptom interpretation\nDisease-risk scoring\nTreatment recommendations\nPrescribing\nEmergency care"]
 
     ALLOWED --> SYSTEM
-    SYSTEM -.-x PROHIBITED
+    SYSTEM -. "not implemented" .-> PROHIBITED
 ```
