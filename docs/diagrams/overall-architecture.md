@@ -24,7 +24,7 @@ flowchart LR
         CC --> SAFE["Administrative / Non-diagnostic Scope"]
     end
 
-    DATA -. "No clinic data integration" .-x CC
+    DATA -. "intentionally separate domains" .-> CC
 ```
 
 ## Architectural Notes
@@ -33,4 +33,5 @@ flowchart LR
 - Grid Analysis performs validation, exploratory analysis, network analysis, reliability analysis and visualisation.
 - GridCare-Lite uses grid asset information for outage and work-order management and stores application records in SQLite.
 - ClinicCare-Lite uses Flask/SQLAlchemy with its own SQLite database for administrative clinic workflows.
-- ClinicCare-Lite does not consume grid data and does not implement diagnosis, symptom interpretation, disease-risk scoring, prescribing or treatment recommendations.
+- The dotted connection represents an intentional separation, not a data transfer: ClinicCare-Lite does not consume grid data.
+- ClinicCare-Lite does not implement diagnosis, symptom interpretation, disease-risk scoring, prescribing or treatment recommendations.
