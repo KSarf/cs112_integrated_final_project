@@ -1,0 +1,27 @@
+# Root runtime requirements for the complete CS112 final project.
+# This file combines the dependencies required by Grid Analysis,
+# GridCare-Lite, and ClinicCare-Lite.
+
+# Grid Analysis
+pandas>=2.2.2
+numpy>=2.0.1
+networkx>=3.3
+matplotlib>=3.9.1
+plotly>=5.23.0
+folium>=0.17.0
+streamlit>=1.37.0
+geopy>=2.4.1
+
+# GridCare-Lite
+bcrypt>=4.2.0
+
+# ClinicCare-Lite
+flask>=3.0.3
+flask-sqlalchemy>=3.1.1
+flask-login>=0.6.3
+flask-wtf>=1.2.1
+flask-bcrypt>=1.0.1
+email-validator>=2.2.0
+
+# Shared testing dependency
+pytest>=8.3.2
