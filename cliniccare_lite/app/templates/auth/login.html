@@ -1,10 +1,92 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Login</h2>
-<form method="post" novalidate>
-  {{ form.hidden_tag() }}
-  <div class="mb-3">{{ form.username.label }} {{ form.username(class_="form-control") }}</div>
-  <div class="mb-3">{{ form.password.label }} {{ form.password(class_="form-control") }}</div>
-  {{ form.submit(class_="btn btn-primary") }}
-</form>
+
+<div class="auth-wrapper">
+
+  <div class="auth-card">
+
+    <div class="auth-heading">
+
+      <h2>
+        Welcome Back
+      </h2>
+
+      <p>
+        Sign in to ClinicCare-Lite.
+      </p>
+
+    </div>
+
+
+    <form method="post" novalidate>
+
+      {{ form.hidden_tag() }}
+
+
+      <div class="mb-3">
+
+        {{ form.username.label(
+        class_="form-label"
+        ) }}
+
+        {{ form.username(
+        class_="form-control",
+        placeholder="Enter your username"
+        ) }}
+
+        {% for error in form.username.errors %}
+
+        <div class="form-error">
+          {{ error }}
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+
+      <div class="mb-4">
+
+        {{ form.password.label(
+        class_="form-label"
+        ) }}
+
+        {{ form.password(
+        class_="form-control",
+        placeholder="Enter your password"
+        ) }}
+
+        {% for error in form.password.errors %}
+
+        <div class="form-error">
+          {{ error }}
+        </div>
+
+        {% endfor %}
+
+      </div>
+
+
+      {{ form.submit(
+      class_="btn btn-primary w-100"
+      ) }}
+
+    </form>
+
+
+    <div class="auth-footer">
+
+      Don't have an account?
+
+      <a href="{{ url_for('auth.register') }}">
+        Register
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
 {% endblock %}

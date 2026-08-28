@@ -1,5 +1,298 @@
 {% extends "base.html" %}
+
 {% block content %}
-<h2>Patient Dashboard (Placeholder)</h2>
-<p>TODO: Implement patient administrative communication workflow.</p>
+
+<h2>Patient Dashboard</h2>
+
+<p class="text-muted">
+    Welcome, {{ current_user.full_name or current_user.username }}.
+</p>
+
+
+{% if announcements %}
+
+<h4>Clinic Announcements</h4>
+
+{% for announcement in announcements %}
+
+<div class="
+            alert
+            {% if announcement.priority == 'Urgent' %}
+                alert-warning
+            {% else %}
+                alert-info
+            {% endif %}
+        ">
+
+    <strong>
+        {{ announcement.title }}
+    </strong>
+
+    <span class="badge bg-secondary ms-2">
+        {{ announcement.priority }}
+    </span>
+
+    <p class="mb-1 mt-2">
+        {{ announcement.body }}
+    </p>
+
+    <small>
+        Published:
+        {{ announcement.published_at.strftime(
+        "%Y-%m-%d %H:%M"
+        ) }}
+    </small>
+
+</div>
+
+{% endfor %}
+
+{% endif %}
+
+
+<h4>My Activity</h4>
+
+<div class="row mb-4">
+
+    <div class="col-md-4">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>Assigned Tasks</h5>
+
+                <h3>
+                    {{ activity.tasks }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>My Submissions</h5>
+
+                <h3>
+                    {{ activity.submissions }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card mb-3">
+
+            <div class="card-body">
+
+                <h5>Appointments</h5>
+
+                <h3>
+                    {{ activity.appointments }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<h4>My Tasks</h4>
+
+{% if tasks %}
+
+{% for task in tasks %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <h5>
+            {{ task.title }}
+        </h5>
+
+        <p>
+            {{ task.instructions }}
+        </p>
+
+        {% if task.due_date %}
+
+        <p>
+            <strong>
+                Due Date:
+            </strong>
+
+            {{ task.due_date.strftime(
+            "%Y-%m-%d"
+            ) }}
+        </p>
+
+        {% endif %}
+
+        <p>
+            <strong>Status:</strong>
+            {{ task.status }}
+        </p>
+
+
+        {% if task.status == "Pending"
+        or task.status == "Needs Resubmission" %}
+
+        <a href="{{ url_for(
+                            'patient.submit_task',
+                            task_id=task.id
+                        ) }}" class="btn btn-primary">
+            Submit File
+        </a>
+
+        {% endif %}
+
+
+        {% for submission in submissions %}
+
+        {% if submission.task_id == task.id
+        and submission.review_notes %}
+
+        <div class="alert alert-secondary mt-3">
+
+            <strong>
+                Clinician Review
+            </strong>
+
+            <p class="mb-1">
+                {{ submission.review_notes }}
+            </p>
+
+            <small>
+                {{ submission.status }}
+
+                {% if submission.reviewed_at %}
+
+                •
+                {{ submission.reviewed_at.strftime(
+                "%Y-%m-%d %H:%M"
+                ) }}
+
+                {% endif %}
+
+            </small>
+
+        </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>
+    You currently have no assigned tasks.
+</p>
+
+{% endif %}
+
+
+<h4>My Submission History</h4>
+
+{% if submissions %}
+
+{% for submission in submissions %}
+
+<div class="card mb-2">
+
+    <div class="card-body">
+
+        <strong>
+            {{ submission.file_name }}
+        </strong>
+
+        <p class="mb-1">
+            Status:
+            {{ submission.status }}
+        </p>
+
+        <small class="text-muted">
+
+            Submitted:
+            {{ submission.submitted_at.strftime(
+            "%Y-%m-%d %H:%M"
+            ) }}
+
+        </small>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>No submissions yet.</p>
+
+{% endif %}
+
+
+<h4>My Appointments</h4>
+
+{% if appointments %}
+
+{% for appointment in appointments %}
+
+<div class="card mb-3">
+
+    <div class="card-body">
+
+        <h5>
+            {{ appointment.summary }}
+        </h5>
+
+        <p>
+            <strong>Date:</strong>
+
+            {{ appointment.appointment_time }}
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+
+            {{ appointment.status }}
+        </p>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p>
+    You have no scheduled appointments.
+</p>
+
+{% endif %}
+
 {% endblock %}

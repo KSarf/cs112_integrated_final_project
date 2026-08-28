@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Schedule Appointment</h2>
+
+<p class="text-muted">
+    Administrative appointment scheduling only.
+</p>
+
+<form method="post">
+
+    {{ form.hidden_tag() }}
+
+    <div class="mb-3">
+
+        {{ form.patient_username.label(
+        class_="form-label"
+        ) }}
+
+        {{ form.patient_username(
+        class_="form-control"
+        ) }}
+
+    </div>
+
+    <div class="mb-3">
+
+        {{ form.summary.label(
+        class_="form-label"
+        ) }}
+
+        {{ form.summary(
+        class_="form-control"
+        ) }}
+
+    </div>
+
+    <div class="mb-3">
+
+        {{ form.appointment_time.label(
+        class_="form-label"
+        ) }}
+
+        {{ form.appointment_time(
+        class_="form-control"
+        ) }}
+
+    </div>
+
+    {{ form.submit(
+    class_="btn btn-primary"
+    ) }}
+
+    <a href="{{ url_for('clinician.dashboard') }}" class="btn btn-secondary">
+        Cancel
+    </a>
+
+</form>
+
+{% endblock %}
