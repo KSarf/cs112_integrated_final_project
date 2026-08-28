@@ -6,6 +6,7 @@ import sqlite3
 from collections.abc import Callable
 from pathlib import Path
 
+from gridcare_lite.app.security.permissions import has_permission
 from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
 
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
@@ -122,10 +123,12 @@ if tk is not None:
             self,
             parent: object,
             username: str,
+            role: str,
             on_substations: Callable[[], None],
             on_outages: Callable[[], None],
             on_work_orders: Callable[[], None],
             on_complaints: Callable[[], None],
+            on_reports: Callable[[], None],
             on_logout: Callable[[], None],
         ) -> None:
             super().__init__(
@@ -137,8 +140,10 @@ if tk is not None:
             self._on_outages = on_outages
             self._on_work_orders = on_work_orders
             self._on_complaints = on_complaints
+            self._on_reports = on_reports
             self._on_logout = on_logout
             self._username = username
+            self._role = role
 
             data = get_dashboard_data()
 
@@ -218,36 +223,40 @@ if tk is not None:
                 pady=(0, 10),
             )
 
-            self._nav_button(
-                sidebar,
-                "▣  Dashboard",
-                lambda: None,
-                active=True,
-            )
+            if has_permission(self._role, "view_substations"):
+                self._nav_button(
+                    sidebar,
+                    "⌂  Substations",
+                    self._on_substations,
+                )
 
-            self._nav_button(
-                sidebar,
-                "⌂  Substations",
-                self._on_substations,
-            )
+            if has_permission(self._role, "view_outages"):
+                self._nav_button(
+                    sidebar,
+                    "⚠  Outages",
+                    self._on_outages,
+                )
 
-            self._nav_button(
-                sidebar,
-                "⚠  Outages",
-                self._on_outages,
-            )
+            if has_permission(self._role, "view_work_orders"):
+                self._nav_button(
+                    sidebar,
+                    "✓  Work Orders",
+                    self._on_work_orders,
+                )
 
-            self._nav_button(
-                sidebar,
-                "✓  Work Orders",
-                self._on_work_orders,
-            )
+            if has_permission(self._role, "log_complaints"):
+                self._nav_button(
+                    sidebar,
+                    "☏  Complaints",
+                    self._on_complaints,
+                )
 
-            self._nav_button(
-                sidebar,
-                "☏  Complaints",
-                self._on_complaints,
-            )
+            if has_permission(self._role, "view_reports"):
+                self._nav_button(
+                    sidebar,
+                    "▤  Reports",
+                    self._on_reports,
+                )
 
             bottom = tk.Frame(
                 sidebar,
@@ -286,7 +295,18 @@ if tk is not None:
                 fg=self.WHITE,
             ).pack(
                 anchor="w",
-                pady=(3, 12),
+                pady=(3, 2),
+            )
+
+            tk.Label(
+                bottom,
+                text=self._role,
+                font=(self.FONT, 8),
+                bg=self.SIDEBAR,
+                fg="#829AB1",
+            ).pack(
+                anchor="w",
+                pady=(0, 12),
             )
 
             tk.Button(

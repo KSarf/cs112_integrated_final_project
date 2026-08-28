@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 from gridcare_lite.app.config import GridCareConfig
+from gridcare_lite.app.security.permissions import has_permission
+from gridcare_lite.app.services.auth_service import AuthenticatedUser
 from gridcare_lite.app.ui.complaints_view import ComplaintsView
 from gridcare_lite.app.ui.dashboard_view import DashboardView
 from gridcare_lite.app.ui.login_view import LoginView
 from gridcare_lite.app.ui.outages_view import OutagesView
+from gridcare_lite.app.ui.reports_view import ReportsView
 from gridcare_lite.app.ui.substations_view import SubstationsView
-from gridcare_lite.app.ui.tk_compat import require_tkinter, tk
+from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk
 from gridcare_lite.app.ui.work_orders_view import WorkOrdersView
 
 if tk is not None:
@@ -25,7 +28,7 @@ if tk is not None:
 
             self._config = config
             self._active_frame = None
-            self._username = ""
+            self._current_user: AuthenticatedUser | None = None
 
             self.show_login()
 
@@ -38,18 +41,24 @@ if tk is not None:
                 )
             )
 
-        def show_dashboard(self, username: str | None = None) -> None:
-            if username is not None:
-                self._username = username
+        def show_dashboard(self, user: AuthenticatedUser | None = None) -> None:
+            if user is not None:
+                self._current_user = user
+
+            if self._current_user is None:
+                self.show_login()
+                return
 
             self._swap_frame(
                 DashboardView(
                     self,
-                    self._username,
+                    self._current_user.username,
+                    self._current_user.role,
                     self.show_substations,
                     self.show_outages,
                     self.show_work_orders,
                     self.show_complaints,
+                    self.show_reports,
                     self.logout,
                 )
             )
@@ -67,6 +76,8 @@ if tk is not None:
                 OutagesView(
                     self,
                     self.show_dashboard,
+                    self._current_user.user_id,
+                    self._current_user.role,
                 )
             )
 
@@ -75,6 +86,8 @@ if tk is not None:
                 WorkOrdersView(
                     self,
                     self.show_dashboard,
+                    self._current_user.user_id,
+                    self._current_user.role,
                 )
             )
 
@@ -86,8 +99,39 @@ if tk is not None:
                 )
             )
 
+        def show_reports(self) -> None:
+            """Display operational reports."""
+
+            if not self._allowed("view_reports"):
+                return
+
+            self._swap_frame(
+                ReportsView(
+                    self,
+                    self.show_dashboard,
+                )
+            )
+
+        def _allowed(self, permission: str) -> bool:
+            """Check the current user's permission."""
+
+            if self._current_user is None:
+                self.show_login()
+                return False
+
+            if has_permission(self._current_user.role, permission):
+                return True
+
+            if messagebox is not None:
+                messagebox.showwarning(
+                    "Access Denied",
+                    "Your role does not have permission for this action.",
+                )
+
+            return False
+
         def logout(self) -> None:
-            self._username = ""
+            self._current_user = None
             self.show_login()
 
         def _swap_frame(self, frame: object) -> None:

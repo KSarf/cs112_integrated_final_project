@@ -173,6 +173,7 @@ if tk is not None:
                 "Engineer",
                 "Technician",
                 "Administrator",
+                "Customer-service representative",
             )
 
             self.role_menu.config(

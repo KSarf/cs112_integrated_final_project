@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from gridcare_lite.app.config import GridCareConfig
-from gridcare_lite.app.services.auth_service import AuthService
+from gridcare_lite.app.services.auth_service import AuthenticatedUser, AuthService
 from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk
 
 if tk is not None:
@@ -25,7 +25,7 @@ if tk is not None:
             self,
             parent: object,
             config: GridCareConfig,
-            on_success: Callable[[str], None],
+            on_success: Callable[[AuthenticatedUser], None],
         ) -> None:
             super().__init__(parent, bg=self.BG)
 
@@ -223,7 +223,7 @@ if tk is not None:
             )
 
             if user is not None:
-                self._on_success(user.username)
+                self._on_success(user)
                 return
 
             if messagebox is not None:

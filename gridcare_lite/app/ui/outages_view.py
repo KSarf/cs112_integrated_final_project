@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import sqlite3
 from collections.abc import Callable
+from datetime import datetime
 from pathlib import Path
 
-from gridcare_lite.app.ui.tk_compat import require_tkinter, tk, ttk
+from gridcare_lite.app.security.permissions import has_permission
+from gridcare_lite.app.services.outage_service import OutageService
+from gridcare_lite.app.ui.tk_compat import messagebox, require_tkinter, tk, ttk
 
 DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 
@@ -14,16 +17,20 @@ DATABASE_PATH = Path("gridcare_lite/database/gridcare.db")
 if tk is not None:
 
     class OutagesView(tk.Frame):
-        """Display reported grid outages."""
+        """Display and manage reported grid outages."""
 
         def __init__(
             self,
             parent: object,
             on_back: Callable[[], None],
+            user_id: int,
+            role: str,
         ) -> None:
             super().__init__(parent)
 
             self._on_back = on_back
+            self._user_id = user_id
+            self._role = role
 
             self.configure(bg="#F7F9FC")
 
@@ -162,6 +169,7 @@ if tk is not None:
                 columns=columns,
                 show="headings",
                 style="Outages.Treeview",
+                selectmode="browse",
             )
 
             self.table.heading(
@@ -294,6 +302,46 @@ if tk is not None:
                 pady=(0, 25),
             )
 
+            if has_permission(self._role, "create_outages"):
+                tk.Button(
+                    footer,
+                    text="Log Outage",
+                    command=self._create_outage_dialog,
+                    bg="#168AAD",
+                    fg="white",
+                    activebackground="#126E8A",
+                    activeforeground="white",
+                    relief=tk.FLAT,
+                    bd=0,
+                    font=("Segoe UI Semibold", 10),
+                    padx=18,
+                    pady=9,
+                    cursor="hand2",
+                ).pack(
+                    side=tk.LEFT,
+                    padx=(0, 10),
+                )
+
+            if has_permission(self._role, "review_outages"):
+                tk.Button(
+                    footer,
+                    text="Review Selected",
+                    command=self._review_selected,
+                    bg="#168AAD",
+                    fg="white",
+                    activebackground="#126E8A",
+                    activeforeground="white",
+                    relief=tk.FLAT,
+                    bd=0,
+                    font=("Segoe UI Semibold", 10),
+                    padx=18,
+                    pady=9,
+                    cursor="hand2",
+                ).pack(
+                    side=tk.LEFT,
+                    padx=(0, 10),
+                )
+
             tk.Button(
                 footer,
                 text="Refresh",
@@ -311,6 +359,271 @@ if tk is not None:
             ).pack(
                 side=tk.RIGHT,
             )
+
+        def _create_outage_dialog(self) -> None:
+            """Open a form for reporting an outage."""
+
+            try:
+                with sqlite3.connect(DATABASE_PATH) as connection:
+                    cursor = connection.cursor()
+
+                    cursor.execute("""
+                        SELECT id, name
+                        FROM substations
+                        ORDER BY name
+                        """)
+
+                    substations = cursor.fetchall()
+
+            except sqlite3.Error as error:
+                messagebox.showerror(
+                    "Database Error",
+                    f"Could not load substations:\n{error}",
+                )
+                return
+
+            if not substations:
+                messagebox.showwarning(
+                    "No Substations",
+                    "No substations are available.",
+                )
+                return
+
+            window = tk.Toplevel(self)
+            window.title("Log Outage")
+            window.geometry("450x430")
+            window.resizable(False, False)
+            window.configure(bg="white")
+
+            form = tk.Frame(
+                window,
+                bg="white",
+                padx=25,
+                pady=20,
+            )
+            form.pack(
+                fill=tk.BOTH,
+                expand=True,
+            )
+
+            tk.Label(
+                form,
+                text="Log New Outage",
+                font=("Segoe UI Semibold", 18),
+                bg="white",
+                fg="#111827",
+            ).pack(
+                anchor="w",
+                pady=(0, 15),
+            )
+
+            tk.Label(
+                form,
+                text="Title",
+                bg="white",
+                fg="#374151",
+            ).pack(anchor="w")
+
+            title_entry = tk.Entry(
+                form,
+                font=("Segoe UI", 10),
+            )
+            title_entry.pack(
+                fill=tk.X,
+                pady=(4, 12),
+            )
+
+            tk.Label(
+                form,
+                text="Substation",
+                bg="white",
+                fg="#374151",
+            ).pack(anchor="w")
+
+            substation_var = tk.StringVar()
+
+            substation_values = [
+                f"{substation_id} - {name}" for substation_id, name in substations
+            ]
+
+            substation_box = ttk.Combobox(
+                form,
+                textvariable=substation_var,
+                values=substation_values,
+                state="readonly",
+            )
+            substation_box.pack(
+                fill=tk.X,
+                pady=(4, 12),
+            )
+            substation_box.current(0)
+
+            tk.Label(
+                form,
+                text="Severity",
+                bg="white",
+                fg="#374151",
+            ).pack(anchor="w")
+
+            severity_var = tk.StringVar(value="Medium")
+
+            severity_box = ttk.Combobox(
+                form,
+                textvariable=severity_var,
+                values=(
+                    "Low",
+                    "Medium",
+                    "High",
+                    "Critical",
+                ),
+                state="readonly",
+            )
+            severity_box.pack(
+                fill=tk.X,
+                pady=(4, 12),
+            )
+
+            tk.Label(
+                form,
+                text="Description",
+                bg="white",
+                fg="#374151",
+            ).pack(anchor="w")
+
+            description_text = tk.Text(
+                form,
+                height=5,
+                font=("Segoe UI", 10),
+            )
+            description_text.pack(
+                fill=tk.X,
+                pady=(4, 15),
+            )
+
+            def save_outage() -> None:
+                title = title_entry.get().strip()
+
+                description = description_text.get(
+                    "1.0",
+                    tk.END,
+                ).strip()
+
+                selected_substation = substation_var.get()
+
+                if not selected_substation:
+                    messagebox.showwarning(
+                        "Missing Information",
+                        "Please select a substation.",
+                    )
+                    return
+
+                substation_id = int(
+                    selected_substation.split(
+                        " - ",
+                        1,
+                    )[0]
+                )
+
+                service = OutageService(DATABASE_PATH)
+
+                try:
+                    service.create_outage(
+                        title=title,
+                        description=description,
+                        substation_id=substation_id,
+                        severity=severity_var.get(),
+                        reported_at=datetime.now().isoformat(timespec="seconds"),
+                        reported_by=self._user_id,
+                    )
+
+                except ValueError as error:
+                    messagebox.showwarning(
+                        "Outage",
+                        str(error),
+                    )
+                    return
+
+                except sqlite3.Error as error:
+                    messagebox.showerror(
+                        "Database Error",
+                        f"Could not save outage:\n{error}",
+                    )
+                    return
+
+                messagebox.showinfo(
+                    "Outage Created",
+                    "The outage was successfully reported.",
+                )
+
+                window.destroy()
+                self.load_outages()
+
+            tk.Button(
+                form,
+                text="Save Outage",
+                command=save_outage,
+                bg="#168AAD",
+                fg="white",
+                activebackground="#126E8A",
+                activeforeground="white",
+                relief=tk.FLAT,
+                bd=0,
+                font=("Segoe UI Semibold", 10),
+                padx=18,
+                pady=9,
+                cursor="hand2",
+            ).pack(
+                anchor="e",
+            )
+
+        def _review_selected(self) -> None:
+            """Mark the selected outage as Under Review."""
+
+            selected = self.table.selection()
+
+            if not selected:
+                messagebox.showwarning(
+                    "Select Outage",
+                    "Please select an outage first.",
+                )
+                return
+
+            values = self.table.item(
+                selected[0],
+                "values",
+            )
+
+            outage_id = int(values[0])
+
+            service = OutageService(DATABASE_PATH)
+
+            try:
+                service.review_outage(
+                    outage_id=outage_id,
+                    changed_by=self._user_id,
+                    changed_at=datetime.now().isoformat(timespec="seconds"),
+                )
+
+            except ValueError as error:
+                messagebox.showwarning(
+                    "Outage",
+                    str(error),
+                )
+                return
+
+            except sqlite3.Error as error:
+                messagebox.showerror(
+                    "Database Error",
+                    f"Could not review outage:\n{error}",
+                )
+                return
+
+            messagebox.showinfo(
+                "Outage Reviewed",
+                "The outage is now Under Review.",
+            )
+
+            self.load_outages()
 
         def load_outages(self) -> None:
             """Load outages from the SQLite database."""
