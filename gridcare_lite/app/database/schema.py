@@ -30,9 +30,20 @@ def initialize_database(database_path: Path) -> None:
                         'Technician',
                         'Customer-service representative'
                     )
-                )
+                ),
+                full_name TEXT,
+                email TEXT
             )
-        """)
+            """)
+
+        # Add newer user columns to an older existing database.
+        user_columns = {row[1] for row in cursor.execute("PRAGMA table_info(users)")}
+
+        if "full_name" not in user_columns:
+            cursor.execute("ALTER TABLE users ADD COLUMN full_name TEXT")
+
+        if "email" not in user_columns:
+            cursor.execute("ALTER TABLE users ADD COLUMN email TEXT")
 
         # -------------------------
         # SUBSTATIONS
@@ -52,7 +63,7 @@ def initialize_database(database_path: Path) -> None:
                 type TEXT,
                 status TEXT
             )
-        """)
+            """)
 
         # -------------------------
         # TRANSMISSION LINES
@@ -75,7 +86,7 @@ def initialize_database(database_path: Path) -> None:
                 FOREIGN KEY (destination_substation_id)
                     REFERENCES substations(id)
             )
-        """)
+            """)
 
         # -------------------------
         # OUTAGES
@@ -87,7 +98,12 @@ def initialize_database(database_path: Path) -> None:
                 description TEXT,
                 substation_id INTEGER NOT NULL,
                 severity TEXT NOT NULL CHECK (
-                    severity IN ('Low', 'Medium', 'High', 'Critical')
+                    severity IN (
+                        'Low',
+                        'Medium',
+                        'High',
+                        'Critical'
+                    )
                 ),
                 status TEXT NOT NULL DEFAULT 'Reported' CHECK (
                     status IN (
@@ -109,7 +125,7 @@ def initialize_database(database_path: Path) -> None:
                 FOREIGN KEY (reported_by)
                     REFERENCES users(id)
             )
-        """)
+            """)
 
         # -------------------------
         # WORK ORDERS
@@ -140,7 +156,7 @@ def initialize_database(database_path: Path) -> None:
                 FOREIGN KEY (assigned_to)
                     REFERENCES users(id)
             )
-        """)
+            """)
 
         # -------------------------
         # COMPLAINTS
@@ -165,7 +181,7 @@ def initialize_database(database_path: Path) -> None:
                     REFERENCES outages(id)
                     ON DELETE SET NULL
             )
-        """)
+            """)
 
         # -------------------------
         # STATUS HISTORY
@@ -191,7 +207,7 @@ def initialize_database(database_path: Path) -> None:
                 FOREIGN KEY (changed_by)
                     REFERENCES users(id)
             )
-        """)
+            """)
 
         # -------------------------
         # MAINTENANCE ACTIVITIES
@@ -211,7 +227,7 @@ def initialize_database(database_path: Path) -> None:
                 FOREIGN KEY (technician_id)
                     REFERENCES users(id)
             )
-        """)
+            """)
 
         # -------------------------
         # INDEXES
@@ -219,26 +235,26 @@ def initialize_database(database_path: Path) -> None:
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_outages_substation
             ON outages(substation_id)
-        """)
+            """)
 
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_outages_status
             ON outages(status)
-        """)
+            """)
 
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_work_orders_status
             ON work_orders(status)
-        """)
+            """)
 
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_work_orders_assigned_to
             ON work_orders(assigned_to)
-        """)
+            """)
 
         cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_complaints_outage
             ON complaints(outage_id)
-        """)
+            """)
 
         connection.commit()
