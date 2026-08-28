@@ -1,53 +1,38 @@
-# National Electricity Grid Network Analysis, GridCare-Lite, and ClinicCare-Lite
+# CS112 Final Project
 
-## Course
-- **Course:** CS 112 Computer Programming for CS
-- **Semester:** Summer 2026
+This repository contains three completed components:
 
-## Project Overview
-This repository is the initial scaffold for a multi-component final course project containing:
-1. National Electricity Grid Network Analysis
-2. GridCare-Lite (desktop outage and maintenance management)
-3. ClinicCare-Lite (web-based clinic administration and communication)
-
-> ⚠️ **Grid data warning:** Electricity-grid datasets in this repository are synthetic and must not be presented as official Ghanaian electricity infrastructure data.
-
-> ⚠️ **ClinicCare-Lite scope:** ClinicCare-Lite does not diagnose patients, interpret symptoms, recommend treatment, or replace professional clinical judgement.
+1. Grid Analysis
+2. GridCare-Lite
+3. ClinicCare-Lite
 
 ## Components
-- **grid_analysis/**: starter data pipeline, graph analysis modules, and Streamlit dashboard skeleton.
-- **gridcare_lite/**: starter Tkinter desktop prototype with SQLite foundation and role/permission helpers.
-- **cliniccare_lite/**: Flask application-factory starter with authentication, messaging, uploads, and dashboards.
 
-## Repository Structure Summary
-- `.github/` workflows and templates
-- `data/` raw and processed synthetic datasets
-- `grid_analysis/`, `gridcare_lite/`, `cliniccare_lite/` component directories
-- `common/` shared constants/logging utilities
-- `docs/` architecture, process, testing, ethics, and planning templates
-- `scripts/` bootstrap and local quality-check scripts
-- `tests/` repository-level checks
+### Grid Analysis
+Analyses synthetic electricity-grid data using pandas, NetworkX, Plotly,
+Matplotlib and Streamlit.
 
-## Technology Stack
-- **Grid Analysis:** Python, pandas, NumPy, NetworkX, matplotlib, plotly, folium, streamlit, geopy
-- **GridCare-Lite:** Python, Tkinter, SQLite, bcrypt, pytest
-- **ClinicCare-Lite:** Flask, HTML/CSS/JavaScript/Bootstrap, SQLite, Flask-SQLAlchemy, Flask-Login, Flask-WTF, bcrypt, pytest
+### GridCare-Lite
+Tkinter desktop application for outage, work-order and maintenance management.
 
-## Local Installation
-### 1) Create a virtual environment
-**Windows (PowerShell)**
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
+### ClinicCare-Lite
+Flask web application for non-urgent clinic administration and communication.
 
-**macOS/Linux**
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
+## Integration
 
-### 2) Install dependencies
+Grid Analysis produces cleaned substation and transmission-line datasets.
+
+GridCare-Lite uses the cleaned Grid Analysis datasets when available.
+If processed data has not yet been generated, GridCare falls back to the
+original synthetic datasets.
+
+ClinicCare-Lite remains separate because clinic and electricity-grid data
+have different purposes and security boundaries.
+
+## Installation
+
+Create and activate a virtual environment, then run:
+
 ```bash
 pip install -r requirements-dev.txt
 pip install -r grid_analysis/requirements.txt
@@ -55,66 +40,82 @@ pip install -r gridcare_lite/requirements.txt
 pip install -r cliniccare_lite/requirements.txt
 ```
 
-## Running Components
-### Grid Analysis (Streamlit)
+Copy the environment template:
+
 ```bash
-streamlit run grid_analysis/dashboard/app.py
+cp .env.example .env
 ```
 
-### GridCare-Lite (Tkinter prototype)
+## Generate Grid Data
+
+```bash
+cd data/raw
+python ../../scripts/generate_grid_data.py
+cd ../..
+```
+
+Then run the Grid Analysis pipeline:
+
+```bash
+python grid_analysis/run_minimum_analysis.py
+```
+
+## Run Grid Analysis
+
+```bash
+python -m streamlit run grid_analysis/dashboard/app.py
+```
+
+## Run GridCare-Lite
+
 ```bash
 python -m gridcare_lite.app.main
 ```
 
-### ClinicCare-Lite (Flask app)
+## Run ClinicCare-Lite
+
 ```bash
 python cliniccare_lite/run.py
 ```
 
-## Testing and Linting
+## Testing
+
+Run the complete repository checks:
+
 ```bash
-python scripts/run_checks.py
-# or separately
-ruff check .
-black --check .
-pytest
+python -m ruff check .
+python -m black --check .
+python -m pytest -q
 ```
 
-## Git Workflow Summary
-- Work from short-lived feature branches.
-- Open pull requests for review.
-- Link issues in PRs.
-- Use focused commits and run checks before review.
+GitHub Actions runs the same checks automatically.
 
-## Contribution Evidence Expectations
-Each contribution should include issue linkage, branch name, tests/checks executed, and concise work notes in pull request discussions and logs.
+## Documentation
 
-## Team Placeholder
-| Member | Primary Role | Secondary Responsibility |
-|--------|--------------|--------------------------|
-| To be decided | To be decided | To be decided |
-| To be decided | To be decided | To be decided |
-| To be decided | To be decided | To be decided |
-| To be decided | To be decided | To be decided |
+Important documentation includes:
 
-## Current Status
-This repository currently contains the **initial scaffold only**. Core application features are intentionally marked with TODO notes.
-
-## Roadmap
-- **Week 1:** Repository setup and environment alignment (placeholder)
-- **Week 2:** Data model and core workflow planning (placeholder)
-- **Week 3:** Component-level MVP implementation (placeholder)
-- **Week 4:** Integration, testing, and review (placeholder)
-- **Week 5:** Final hardening, documentation, and presentation prep (placeholder)
-
-## Known Limitations
-- No production-ready authentication flow yet.
-- No finalized real-world deployment architecture.
-- Analytics and operational workflows are scaffolds only.
-
-## Documentation Links
-- `docs/project-plan.md`
-- `docs/git-workflow.md`
+- `grid_analysis/README.md`
+- `docs/grid-analysis-data-quality-report.md`
+- `docs/grid-analysis-data-dictionary.md`
+- `docs/grid-analysis-findings.md`
+- `docs/integration-report.md`
+- `docs/deployment-guide.md`
 - `docs/security-and-ethics.md`
-- `docs/testing/test-plan.md`
-- `docs/documentation-checklist.md`
+
+## Important Limitations
+
+Grid data is synthetic and must not be presented as official infrastructure data.
+
+Grid Analysis uses graph-based educational reliability measures and does not
+perform electrical power-flow or stability studies.
+
+ClinicCare-Lite does not diagnose patients, interpret symptoms, recommend
+treatment or replace professional clinical judgement.
+
+## Project Status
+
+- Grid Analysis: Complete
+- GridCare-Lite: Complete
+- ClinicCare-Lite: Complete
+- Repository integration: Complete
+- Automated repository tests: Passing

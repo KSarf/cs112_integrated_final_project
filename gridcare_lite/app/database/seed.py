@@ -12,10 +12,19 @@ def seed_demo_data(database_path: Path) -> None:
     """Import substations and transmission lines from CSV files."""
 
     project_root = Path(__file__).resolve().parents[3]
-    datasets_path = project_root / "Datasets"
 
-    substations_file = datasets_path / "substations.csv"
-    lines_file = datasets_path / "lines.csv"
+    processed_path = project_root / "data" / "processed"
+    fallback_path = project_root / "Datasets"
+
+    processed_substations = processed_path / "substations_clean.csv"
+    processed_lines = processed_path / "lines_clean.csv"
+
+    if processed_substations.exists() and processed_lines.exists():
+        substations_file = processed_substations
+        lines_file = processed_lines
+    else:
+        substations_file = fallback_path / "substations.csv"
+        lines_file = fallback_path / "lines.csv"
 
     with get_connection(database_path) as connection:
         cursor = connection.cursor()
