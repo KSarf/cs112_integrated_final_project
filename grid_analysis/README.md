@@ -44,6 +44,24 @@ From the repository root:
 cd data/raw
 python ../../scripts/generate_grid_data.py
 cd ../..
+```
+
+The generated CSV files are stored locally under:
+
+```text
+data/raw/
+```
+
+Raw and processed CSV files are ignored by Git because they can be
+reproduced from the generator and analysis pipeline.
+
+## Run the Minimum Analysis Pipeline
+
+From the repository root:
+
+```bash
+python grid_analysis/run_minimum_analysis.py
+```
 
 The generated CSV files are stored locally under:
 
@@ -77,7 +95,8 @@ Data-quality documentation
 Data dictionary creation
 Findings and limitations
 EDA notebook creation
-Generated Processed Data
+
+## Generated Processed Data
 
 The pipeline generates:
 
@@ -90,14 +109,15 @@ data/processed/
 ├── critical_substations.csv
 ├── n1_node_results.csv
 └── n1_line_results.csv
-Analysis Outputs
+
+## Analysis Outputs
 
 Visual outputs are generated under:
 
 grid_analysis/outputs/
 ├── network_graph.png
 └── substation_map.html
-Exploratory Data Analysis
+## Exploratory Data Analysis
 
 The reproducible EDA notebook is:
 
@@ -111,7 +131,8 @@ Capacity distribution
 Transmission-line status
 Infrastructure age
 Structurally important substations
-Network Analysis
+
+## Network Analysis
 
 The grid is represented as an undirected NetworkX graph.
 
@@ -128,7 +149,9 @@ Closeness centrality
 Connected components
 Clustering coefficient
 Global network efficiency
-Simplified N-1 Analysis
+
+
+## Simplified N-1 Analysis
 
 The analysis removes one network component at a time.
 
@@ -145,7 +168,7 @@ This is a graph-based educational approximation.
 
 It is not a power-flow or electrical stability study.
 
-Geographic Analysis
+## Geographic Analysis
 
 Substation coordinates are visualised using an interactive Plotly map.
 
@@ -156,7 +179,8 @@ Substation locations
 Voltage levels
 Capacity values
 Cross-border grid connections
-Dashboard
+
+## Dashboard
 
 Start the Streamlit dashboard from the repository root:
 
@@ -178,7 +202,7 @@ datasets and displays a warning.
 The dashboard includes calculated structural network metrics and does not use
 a hard-coded reliability percentage.
 
-Documentation
+## Documentation
 
 Analysis documentation is generated under:
 
@@ -205,7 +229,7 @@ Findings and limitations
 Summarises the calculated network results and clearly explains the limits
 of graph-based reliability analysis.
 
-Testing
+## Testing
 
 Run Grid Analysis tests with:
 
@@ -217,13 +241,15 @@ Data validation
 Network graph construction
 Basic network metrics
 N-1 fragmentation behaviour
-Code Quality
+
+## Code Quality
 
 Run:
 
 python -m black grid_analysis
 python -m ruff check grid_analysis
-Important Limitations
+
+## Important Limitations
 
 The dataset and analysis are educational.
 
